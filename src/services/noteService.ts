@@ -1,5 +1,6 @@
 import { collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 import { db } from '@/firebase/config'
+import { docsWithId, logSnapshotError } from './firestore'
 import { NewNoteInput, Note } from '@/types/note'
 
 function notesCol(uid: string) {
@@ -8,10 +9,7 @@ function notesCol(uid: string) {
 
 export function subscribeToNotes(uid: string, callback: (notes: Note[]) => void) {
   const q = query(notesCol(uid), orderBy('updatedAt', 'desc'))
-  return onSnapshot(q, (snapshot) => {
-    const notes = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Note)
-    callback(notes)
-  })
+  return onSnapshot(q, (snapshot) => callback(docsWithId<Note>(snapshot)), logSnapshotError('الملاحظات'))
 }
 
 export async function createNote(uid: string, input: NewNoteInput) {

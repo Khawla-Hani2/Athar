@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/hooks/useTheme'
 import { ToastProvider } from '@/components/ui/Toast'
 import { IconSprite } from '@/components/ui/IconSprite'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
+import { SplashController } from '@/components/layout/SplashController'
 import { LoginPage } from '@/pages/LoginPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
@@ -19,6 +20,7 @@ export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <SplashController />
         <ToastProvider>
           <IconSprite />
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>

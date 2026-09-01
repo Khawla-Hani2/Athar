@@ -64,7 +64,16 @@ export async function changePassword(newPassword: string) {
   return firebaseUpdatePassword(auth.currentUser, newPassword)
 }
 
-export function mapAuthError(code: string): string {
+/** Safely reads the Firebase `auth/*` error code from an unknown thrown value. */
+function firebaseErrorCode(error: unknown): string {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    return String((error as { code: unknown }).code ?? '')
+  }
+  return ''
+}
+
+export function mapAuthError(error: unknown): string {
+  const code = typeof error === 'string' ? error : firebaseErrorCode(error)
   switch (code) {
     case 'auth/invalid-email':
       return 'صيغة البريد الإلكتروني غير صحيحة.'

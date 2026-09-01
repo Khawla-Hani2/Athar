@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Field } from '@/components/ui/Field'
 import { Button } from '@/components/ui/Button'
 import { confirmPasswordReset, mapAuthError } from '@/services/authService'
+import { getPasswordError } from '@/lib/validation'
 
 export function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -20,12 +21,9 @@ export function ResetPasswordPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
-    if (password.length < 8) {
-      setError('كلمة المرور يجب أن تتكون من ٨ أحرف على الأقل.')
-      return
-    }
-    if (password !== confirm) {
-      setError('كلمتا المرور غير متطابقتين.')
+    const passwordError = getPasswordError(password, confirm)
+    if (passwordError) {
+      setError(passwordError)
       return
     }
     if (!code) {
@@ -37,8 +35,8 @@ export function ResetPasswordPage() {
       await confirmPasswordReset(code, password)
       setDone(true)
       setTimeout(() => navigate('/login'), 2000)
-    } catch (err: any) {
-      setError(mapAuthError(err?.code ?? ''))
+    } catch (err) {
+      setError(mapAuthError(err))
     } finally {
       setLoading(false)
     }

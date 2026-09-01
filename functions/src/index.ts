@@ -1,17 +1,28 @@
 import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
-import { getAuth } from 'firebase-admin/auth'
 import { onSchedule } from 'firebase-functions/v2/scheduler'
-import { sendEmail } from './mailer.js'
-import { TaskDoc, UserSettingsDoc, TASK_PRIORITY_LABELS_AR } from './types.js'
+import {
+  emailUser,
+  getAllUserIds,
+  getUserSettings,
+  userSettingsRef,
+  userTasksRef,
+} from './helpers.js'
+import { TaskDoc, TASK_PRIORITY_LABELS_AR } from './types.js'
 
 initializeApp()
 const db = getFirestore()
-const auth = getAuth()
 
 const TIME_ZONE = 'Asia/Riyadh'
 
-function nowParts() {
+interface ClockParts {
+  dateISO: string
+  hh: string
+  mm: string
+  weekday: string
+}
+
+function nowParts(): ClockParts {
   const fmt = new Intl.DateTimeFormat('en-GB', {
     timeZone: TIME_ZONE,
     year: 'numeric',
@@ -34,14 +45,9 @@ function timeWithinWindow(target: string, current: { hh: string; mm: string }, w
   return Math.abs(currentMinutes - targetMinutes) < windowMinutes
 }
 
-async function getAllUsers() {
-  const snap = await db.collection('users').get()
-  return snap.docs.map((d) => d.id)
-}
-
 /** يشمل مهام اليوم (تاريخ المهمة أو الموعد النهائي يقع اليوم) وهي غير منجزة */
 async function fetchTodayTasks(uid: string, todayISO: string): Promise<TaskDoc[]> {
-  const snap = await db.collection('users').doc(uid).collection('tasks').where('status', '==', 'pending').get()
+  const snap = await userTasksRef(uid).where('status', '==', 'pending').get()
   return snap.docs
     .map((d) => d.data() as TaskDoc)
     .filter((t) => {
@@ -57,11 +63,10 @@ async function fetchTodayTasks(uid: string, todayISO: string): Promise<TaskDoc[]
 // ─────────────────────────────────────────────────────────────
 export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
   const { dateISO, hh, mm } = nowParts()
-  const users = await getAllUsers()
+  const userIds = await getAllUserIds()
 
-  for (const uid of users) {
-    const settingsSnap = await db.collection('users').doc(uid).collection('meta').doc('settings').get()
-    const settings = settingsSnap.data() as UserSettingsDoc | undefined
+  for (const uid of userIds) {
+    const settings = await getUserSettings(uid)
     if (!settings?.notifications?.dailyEmailEnabled) continue
     if (settings.lastDailyEmailSentDate === dateISO) continue
     if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) continue
@@ -69,7 +74,9 @@ export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
     const tasks = await fetchTodayTasks(uid, dateISO)
     if (tasks.length === 0) continue
 
-    const highPriorityDueToday = tasks.filter((t) => t.priority === 'high' && (t.deadlineDate === dateISO || t.date === dateISO))
+    const highPriorityDueToday = tasks.filter(
+      (t) => t.priority === 'high' && (t.deadlineDate === dateISO || t.date === dateISO)
+    )
 
     let body = `<p>صباح الخير </p><p>لديك اليوم <b>${tasks.length}</b> ${tasks.length === 1 ? 'مهمة' : 'مهام'}.</p>`
     if (highPriorityDueToday.length > 0) {
@@ -77,11 +84,8 @@ export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
     }
     body += '<ul>' + tasks.slice(0, 10).map((t) => `<li>${t.title} — ${TASK_PRIORITY_LABELS_AR[t.priority]}</li>`).join('') + '</ul>'
 
-    const user = await auth.getUser(uid)
-    if (user.email) {
-      await sendEmail(user.email, 'أَثَر — ملخصك اليومي', body)
-    }
-    await settingsSnap.ref.set({ lastDailyEmailSentDate: dateISO }, { merge: true })
+    await emailUser(uid, 'أَثَر — ملخصك اليومي', body)
+    await userSettingsRef(uid).set({ lastDailyEmailSentDate: dateISO }, { merge: true })
   }
 })
 
@@ -96,19 +100,13 @@ const REMINDER_OFFSET_MS: Record<string, number> = {
 
 export const sendDeadlineReminders = onSchedule('every 15 minutes', async () => {
   const now = Date.now()
-  const users = await getAllUsers()
+  const userIds = await getAllUserIds()
 
-  for (const uid of users) {
-    const settingsSnap = await db.collection('users').doc(uid).collection('meta').doc('settings').get()
-    const settings = settingsSnap.data() as UserSettingsDoc | undefined
+  for (const uid of userIds) {
+    const settings = await getUserSettings(uid)
     if (!settings?.notifications?.deadlineNotificationsEnabled) continue
 
-    const tasksSnap = await db
-      .collection('users')
-      .doc(uid)
-      .collection('tasks')
-      .where('status', '==', 'pending')
-      .get()
+    const tasksSnap = await userTasksRef(uid).where('status', '==', 'pending').get()
 
     for (const doc of tasksSnap.docs) {
       const task = doc.data() as TaskDoc
@@ -118,14 +116,11 @@ export const sendDeadlineReminders = onSchedule('every 15 minutes', async () => 
       const notifyAt = deadline - REMINDER_OFFSET_MS[task.reminder]
 
       if (now >= notifyAt && now < deadline) {
-        const user = await auth.getUser(uid)
-        if (user.email) {
-          await sendEmail(
-            user.email,
-            `أَثَر — تذكير: ${task.title}`,
-            `<p>يقترب الموعد النهائي لمهمة <b>${task.title}</b>.</p><p>الأولوية: ${TASK_PRIORITY_LABELS_AR[task.priority]}</p>`
-          )
-        }
+        await emailUser(
+          uid,
+          `أَثَر — تذكير: ${task.title}`,
+          `<p>يقترب الموعد النهائي لمهمة <b>${task.title}</b>.</p><p>الأولوية: ${TASK_PRIORITY_LABELS_AR[task.priority]}</p>`
+        )
         await doc.ref.set({ reminderSentAt: now }, { merge: true })
       }
     }
@@ -139,15 +134,14 @@ export const sendWeeklySummaries = onSchedule('every 15 minutes', async () => {
   const { dateISO, hh, mm, weekday } = nowParts()
   if (weekday !== 'Fri') return
 
-  const users = await getAllUsers()
-  for (const uid of users) {
-    const settingsSnap = await db.collection('users').doc(uid).collection('meta').doc('settings').get()
-    const settings = settingsSnap.data() as UserSettingsDoc | undefined
+  const userIds = await getAllUserIds()
+  for (const uid of userIds) {
+    const settings = await getUserSettings(uid)
     if (!settings?.notifications?.weeklySummaryEnabled) continue
     if (settings.lastWeeklySummarySentDate === dateISO) continue
     if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) continue
 
-    const tasksSnap = await db.collection('users').doc(uid).collection('tasks').get()
+    const tasksSnap = await userTasksRef(uid).get()
     const tasks = tasksSnap.docs.map((d) => d.data() as TaskDoc)
 
     const weekAgoISO = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
@@ -156,15 +150,12 @@ export const sendWeeklySummaries = onSchedule('every 15 minutes', async () => {
     const total = weekTasks.length
     const percentage = total === 0 ? 0 : Math.round((completed / total) * 100)
 
-    const user = await auth.getUser(uid)
-    if (user.email) {
-      await sendEmail(
-        user.email,
-        'أَثَر — ملخصك الأسبوعي',
-        `<p>هذا أسبوعك في أَثَر </p><p>أنجزتِ <b>${completed}</b> من أصل <b>${total}</b> مهمة — نسبة إنجاز <b>${percentage}٪</b>.</p>`
-      )
-    }
-    await settingsSnap.ref.set({ lastWeeklySummarySentDate: dateISO }, { merge: true })
+    await emailUser(
+      uid,
+      'أَثَر — ملخصك الأسبوعي',
+      `<p>هذا أسبوعك في أَثَر </p><p>أنجزتِ <b>${completed}</b> من أصل <b>${total}</b> مهمة — نسبة إنجاز <b>${percentage}٪</b>.</p>`
+    )
+    await userSettingsRef(uid).set({ lastWeeklySummarySentDate: dateISO }, { merge: true })
   }
 })
 
@@ -181,9 +172,9 @@ export const runMonthlyCleanup = onSchedule({ schedule: '0 3 1 * *', timeZone: T
   const monthEndDate = new Date(y, m + 1, 0)
   const monthEndISO = `${monthEndDate.getFullYear()}-${String(monthEndDate.getMonth() + 1).padStart(2, '0')}-${String(monthEndDate.getDate()).padStart(2, '0')}`
 
-  const users = await getAllUsers()
-  for (const uid of users) {
-    const tasksCol = db.collection('users').doc(uid).collection('tasks')
+  const userIds = await getAllUserIds()
+  for (const uid of userIds) {
+    const tasksCol = userTasksRef(uid)
     const snap = await tasksCol.get()
     const monthTasks = snap.docs.filter((d) => {
       const t = d.data() as TaskDoc

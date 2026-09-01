@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Topbar } from '@/components/layout/Topbar'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
@@ -9,19 +9,32 @@ import { StatCard } from '@/components/stats/StatCard'
 import { AchievementsCard } from '@/components/stats/AchievementsCard'
 import { GoalsCard } from '@/components/stats/GoalsCard'
 import { WeeklyTaskList } from '@/components/tasks/WeeklyTaskList'
-import { TaskFormModal } from '@/components/tasks/TaskFormModal'
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { TaskEditor } from '@/components/tasks/TaskEditor'
 import { useAuth } from '@/hooks/useAuth'
 import { useTasks } from '@/hooks/useTasks'
 import { useSettings } from '@/hooks/useSettings'
 import { useNow } from '@/hooks/useNow'
-import { useToast } from '@/components/ui/Toast'
-import { Task, NewTaskInput } from '@/types/task'
-import { createTask, updateTask, completeTask, reopenTask, deleteTask } from '@/services/taskService'
+import { useRecordDialog } from '@/hooks/useRecordDialog'
+import { useTaskActions } from '@/hooks/useTaskActions'
+import { Task } from '@/types/task'
 import { pickMostImportantTask } from '@/utils/taskSort'
-import { computeCompletion, computeUrgencyPercentage, countCompletedInRange, getDayRange, getWeekRange, getMonthRange } from '@/utils/stats'
+import {
+  computeCompletion,
+  computeUrgencyPercentage,
+  countCompletedInRange,
+  getDayRange,
+  getWeekRange,
+  getMonthRange,
+} from '@/utils/stats'
 import { computeStreak } from '@/utils/streak'
-import { formatArabicDate, formatClock, formatCountdown, getGreeting, combineDateTime, fromISODate } from '@/utils/date'
+import {
+  formatArabicDate,
+  formatClock,
+  formatCountdown,
+  getGreeting,
+  combineDateTime,
+  fromISODate,
+} from '@/utils/date'
 import { getDailyMotivationalPhrase } from '@/utils/motivationalPhrases'
 
 export function DashboardPage() {
@@ -29,11 +42,8 @@ export function DashboardPage() {
   const { tasks } = useTasks()
   const { settings } = useSettings()
   const now = useNow()
-  const { showToast } = useToast()
-
-  const [formOpen, setFormOpen] = useState(false)
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [deletingTask, setDeletingTask] = useState<Task | null>(null)
+  const dialog = useRecordDialog<Task>()
+  const actions = useTaskActions()
 
   const mostImportant = useMemo(() => pickMostImportantTask(tasks), [tasks])
 
@@ -62,47 +72,6 @@ export function DashboardPage() {
 
   if (!user) return null
 
-  const handleToggleComplete = async (task: Task) => {
-    try {
-      if (task.status === 'completed') {
-        await reopenTask(user.uid, task.id)
-      } else {
-        await completeTask(user.uid, task.id)
-        showToast('أحسنتِ! تم إنجاز المهمة ')
-      }
-    } catch {
-      showToast('تعذّر تحديث المهمة، حاولي مرة أخرى.', 'error')
-    }
-  }
-
-  const handleOpenTask = (task: Task) => {
-    setEditingTask(task)
-    setFormOpen(true)
-  }
-
-  const handleSubmitTask = async (input: NewTaskInput) => {
-    if (editingTask) {
-      await updateTask(user.uid, editingTask.id, input)
-      showToast('تم حفظ التغييرات ')
-    } else {
-      await createTask(user.uid, input)
-      showToast('تمت إضافة المهمة ')
-    }
-  }
-
-  const handleDeleteConfirmed = async () => {
-    if (!deletingTask) return
-    try {
-      await deleteTask(user.uid, deletingTask.id)
-      showToast('تم حذف المهمة')
-    } catch {
-      showToast('تعذّر حذف المهمة.', 'error')
-    } finally {
-      setDeletingTask(null)
-      setFormOpen(false)
-    }
-  }
-
   return (
     <div>
       <Topbar
@@ -117,19 +86,18 @@ export function DashboardPage() {
           </>
         }
         actions={
-          <Button
-            onClick={() => {
-              setEditingTask(null)
-              setFormOpen(true)
-            }}
-          >
+          <Button onClick={dialog.openCreate}>
             <Icon name="plus" />
             مهمة جديدة
           </Button>
         }
       />
 
-      <PriorityTaskCard task={mostImportant} onComplete={handleToggleComplete} onOpen={handleOpenTask} />
+      <PriorityTaskCard
+        task={mostImportant}
+        onComplete={actions.toggleComplete}
+        onOpen={dialog.openEdit}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
         <StatCard label="إنجاز اليوم" completed={dayStats.completed} total={dayStats.total} percentage={dayStats.percentage} color="var(--teal-600)" />
@@ -179,24 +147,14 @@ export function DashboardPage() {
         <div className="flex items-center justify-between mb-3.5">
           <h2 className="text-[16px]">مهام هذا الأسبوع</h2>
         </div>
-        <WeeklyTaskList tasks={tasks.filter((t) => t.status === 'pending')} onToggleComplete={handleToggleComplete} onOpen={handleOpenTask} />
+        <WeeklyTaskList
+          tasks={tasks.filter((t) => t.status === 'pending')}
+          onToggleComplete={actions.toggleComplete}
+          onOpen={dialog.openEdit}
+        />
       </Card>
 
-      <TaskFormModal
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSubmit={handleSubmitTask}
-        task={editingTask}
-        onDelete={editingTask ? () => setDeletingTask(editingTask) : undefined}
-      />
-
-      <ConfirmDialog
-        open={Boolean(deletingTask)}
-        title="هل أنتِ متأكدة من حذف هذه المهمة؟"
-        description={deletingTask ? `"${deletingTask.title}" — لا يمكن التراجع عن هذا الإجراء.` : undefined}
-        onConfirm={handleDeleteConfirmed}
-        onCancel={() => setDeletingTask(null)}
-      />
+      <TaskEditor dialog={dialog} actions={actions} />
     </div>
   )
 }
