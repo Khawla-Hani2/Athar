@@ -71,7 +71,7 @@ export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
 
     const highPriorityDueToday = tasks.filter((t) => t.priority === 'high' && (t.deadlineDate === dateISO || t.date === dateISO))
 
-    let body = `<p>صباح الخير ✨</p><p>لديك اليوم <b>${tasks.length}</b> ${tasks.length === 1 ? 'مهمة' : 'مهام'}.</p>`
+    let body = `<p>صباح الخير </p><p>لديك اليوم <b>${tasks.length}</b> ${tasks.length === 1 ? 'مهمة' : 'مهام'}.</p>`
     if (highPriorityDueToday.length > 0) {
       body += `<p>منها <b>${highPriorityDueToday.length}</b> ${highPriorityDueToday.length === 1 ? 'مهمة عالية الأولوية وموعدها النهائي اليوم' : 'مهام عالية الأولوية وموعدها النهائي اليوم'}.</p>`
     }
@@ -161,7 +161,7 @@ export const sendWeeklySummaries = onSchedule('every 15 minutes', async () => {
       await sendEmail(
         user.email,
         'أَثَر — ملخصك الأسبوعي',
-        `<p>هذا أسبوعك في أَثَر ✨</p><p>أنجزتِ <b>${completed}</b> من أصل <b>${total}</b> مهمة — نسبة إنجاز <b>${percentage}٪</b>.</p>`
+        `<p>هذا أسبوعك في أَثَر </p><p>أنجزتِ <b>${completed}</b> من أصل <b>${total}</b> مهمة — نسبة إنجاز <b>${percentage}٪</b>.</p>`
       )
     }
     await settingsSnap.ref.set({ lastWeeklySummarySentDate: dateISO }, { merge: true })

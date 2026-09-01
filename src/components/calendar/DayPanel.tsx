@@ -20,7 +20,7 @@ export function DayPanel({ dateISO, tasks, onToggleComplete, onOpen }: DayPanelP
         {tasks.length === 0 ? 'لا توجد مهام في هذا اليوم' : `${toArabicDigits(tasks.length)} مهمة في هذا اليوم`}
       </p>
       {tasks.length === 0 ? (
-        <EmptyState message="ما عندك مهام في هذا اليوم ✨" icon={<Icon name="cal" className="w-6 h-6" />} compact />
+        <EmptyState message="ما عندك مهام في هذا اليوم " icon={<Icon name="cal" className="w-6 h-6" />} compact />
       ) : (
         tasks.map((task) => (
           <TaskRow key={task.id} task={task} onToggleComplete={onToggleComplete} onOpen={onOpen} />
