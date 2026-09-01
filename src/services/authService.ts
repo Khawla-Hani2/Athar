@@ -1,5 +1,7 @@
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   signOut as firebaseSignOut,
   sendPasswordResetEmail,
   confirmPasswordReset as firebaseConfirmPasswordReset,
@@ -7,7 +9,9 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth'
-import { auth } from '@/firebase/config'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { auth, db } from '@/firebase/config'
+import { DEFAULT_SETTINGS } from '@/types/settings'
 
 export function subscribeToAuth(callback: (user: User | null) => void) {
   return onAuthStateChanged(auth, callback)
@@ -15,6 +19,32 @@ export function subscribeToAuth(callback: (user: User | null) => void) {
 
 export async function login(email: string, password: string) {
   return signInWithEmailAndPassword(auth, email, password)
+}
+
+export async function signup(name: string, email: string, password: string) {
+  const cred = await createUserWithEmailAndPassword(auth, email, password)
+  const displayName = name.trim()
+  if (displayName) {
+    await updateProfile(cred.user, { displayName })
+  }
+  // Bootstrap the user's Firestore records so the scheduled Cloud Functions
+  // (which iterate the `users` collection) and the settings listener find them.
+  // The account already exists at this point; a Firestore hiccup here (offline,
+  // database not provisioned yet) must not block sign-in — the app falls back to
+  // DEFAULT_SETTINGS and these docs get created on next settings save.
+  try {
+    await Promise.all([
+      setDoc(doc(db, 'users', cred.user.uid), {
+        email,
+        displayName: displayName || null,
+        createdAt: serverTimestamp(),
+      }),
+      setDoc(doc(db, 'users', cred.user.uid, 'meta', 'settings'), DEFAULT_SETTINGS),
+    ])
+  } catch (err) {
+    console.error('[athar] فشل تهيئة مستندات المستخدم بعد إنشاء الحساب:', err)
+  }
+  return cred
 }
 
 export async function logout() {
@@ -54,6 +84,12 @@ export function mapAuthError(code: string): string {
       return 'الرابط غير صالح أو تم استخدامه من قبل.'
     case 'auth/weak-password':
       return 'كلمة المرور ضعيفة جدًا، اختاري كلمة مرور أقوى.'
+    case 'auth/email-already-in-use':
+      return 'هذا البريد الإلكتروني مسجّل مسبقًا، سجّلي الدخول بدلًا من ذلك.'
+    case 'auth/operation-not-allowed':
+    case 'auth/configuration-not-found':
+    case 'auth/admin-restricted-operation':
+      return 'تسجيل الدخول بالبريد الإلكتروني/كلمة المرور غير مُفعّل. فعّليه من Firebase Console ← Authentication ← Sign-in method.'
     case 'auth/requires-recent-login':
       return 'لأمان حسابك، يرجى تسجيل الخروج والدخول مرة أخرى ثم إعادة المحاولة.'
     default:

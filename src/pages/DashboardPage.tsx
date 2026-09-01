@@ -68,7 +68,7 @@ export function DashboardPage() {
         await reopenTask(user.uid, task.id)
       } else {
         await completeTask(user.uid, task.id)
-        showToast('أحسنتِ! تم إنجاز المهمة ✨')
+        showToast('أحسنتِ! تم إنجاز المهمة ')
       }
     } catch {
       showToast('تعذّر تحديث المهمة، حاولي مرة أخرى.', 'error')
@@ -83,10 +83,10 @@ export function DashboardPage() {
   const handleSubmitTask = async (input: NewTaskInput) => {
     if (editingTask) {
       await updateTask(user.uid, editingTask.id, input)
-      showToast('تم حفظ التغييرات ✨')
+      showToast('تم حفظ التغييرات ')
     } else {
       await createTask(user.uid, input)
-      showToast('تمت إضافة المهمة ✨')
+      showToast('تمت إضافة المهمة ')
     }
   }
 

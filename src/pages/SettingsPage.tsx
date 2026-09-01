@@ -53,7 +53,7 @@ export function SettingsPage() {
     try {
       await changePassword(newPassword)
       setNewPassword('')
-      showToast('تم تحديث كلمة المرور ✨')
+      showToast('تم تحديث كلمة المرور ')
     } catch (err: any) {
       setPasswordError(mapAuthError(err?.code ?? ''))
     } finally {
