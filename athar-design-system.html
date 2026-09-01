@@ -1,0 +1,1562 @@
+<title>أَثَر — نظام التصميم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --font-display:'El Messiri','Amiri','Traditional Arabic',serif;
+  --font-body:'IBM Plex Sans Arabic','Segoe UI','Tahoma',sans-serif;
+
+  /* ---- light (default) ---- */
+  --ink-900:#241F19; --ink-700:#5B5346; --ink-500:#8C8372; --ink-300:#C9BFA9;
+  --line:#E4D9C2; --line-soft:#EEE5D3; --line-strong:#D3C4A4;
+  --paper:#FAF5EA; --paper-alt:#F1E9D8; --surface:#FFFEFA; --surface-raised:#FFFFFF;
+
+  --teal-900:#0A2E2B; --teal-700:#0F4C48; --teal-600:#146059; --teal-500:#1B7A70;
+  --teal-tint:#E4EFEC; --teal-tint-strong:#D2E5E1;
+  --palm-700:#3F6B47; --palm-500:#5A8862; --palm-tint:#E8F0E4;
+  --sand-700:#A97A2E; --sand-600:#C08A3E; --sand-500:#D1971A; --sand-tint:#F5E9D2;
+
+  --crit-700:#8A2E1F; --crit-600:#A6362B; --crit-tint:#F6E1DC;
+  --success-700:#2E5D38; --success-600:#3F7A4A; --success-tint:#E6F0E4;
+
+  /* task-type categorical (validated: OKLab CVD-safe order) */
+  --cat-study:#0C9384; --cat-work:#B14E28; --cat-project:#8352A0; --cat-personal:#C4881A; --cat-general:#3F8A4C;
+
+  /* priority — one hue, ordinal, monotone lightness */
+  --pr-high:#8A2E1F; --pr-high-tint:#F3DCD5;
+  --pr-med:#A66339;  --pr-med-tint:#F1E4D5;
+  --pr-low:#8A7D6B;  --pr-low-tint:#EDE7DC;
+
+  --shadow-card:0 1px 2px rgba(36,31,25,.04), 0 8px 24px -12px rgba(36,31,25,.14);
+  --shadow-frame:0 24px 64px -24px rgba(20,20,16,.28), 0 2px 8px rgba(20,20,16,.06);
+  --shadow-pop:0 12px 32px -8px rgba(20,20,16,.22);
+  --radius-sm:8px; --radius-md:12px; --radius-lg:18px; --radius-xl:24px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink-900:#F2EADB; --ink-700:#C9BEAA; --ink-500:#8F8672; --ink-300:#4B4739;
+    --line:#2A3436; --line-soft:#212B2C; --line-strong:#374244;
+    --paper:#0F1517; --paper-alt:#0B1112; --surface:#161F21; --surface-raised:#1B2527;
+
+    --teal-900:#BFE7E0; --teal-700:#4FB6AC; --teal-600:#63C2B8; --teal-500:#7FD1C7;
+    --teal-tint:rgba(79,182,172,.14); --teal-tint-strong:rgba(79,182,172,.22);
+    --palm-700:#86B98B; --palm-500:#9AC79E; --palm-tint:rgba(134,185,139,.14);
+    --sand-700:#D9AD66; --sand-600:#E0B978; --sand-500:#E0B978; --sand-tint:rgba(217,173,102,.14);
+
+    --crit-700:#E2836C; --crit-600:#D9756B; --crit-tint:rgba(217,117,99,.16);
+    --success-700:#8FCB96; --success-600:#7FAE84; --success-tint:rgba(127,174,132,.14);
+
+    --cat-study:#3FB5A6; --cat-work:#D9835B; --cat-project:#B08AD1; --cat-personal:#E0B978; --cat-general:#7FAE84;
+
+    --pr-high:#E2836C; --pr-high-tint:rgba(226,131,108,.16);
+    --pr-med:#D3A379; --pr-med-tint:rgba(211,163,121,.14);
+    --pr-low:#9C9583; --pr-low-tint:rgba(156,149,131,.14);
+
+    --shadow-card:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --shadow-frame:0 24px 64px -24px rgba(0,0,0,.7), 0 2px 8px rgba(0,0,0,.3);
+    --shadow-pop:0 12px 32px -8px rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink-900:#F2EADB; --ink-700:#C9BEAA; --ink-500:#8F8672; --ink-300:#4B4739;
+  --line:#2A3436; --line-soft:#212B2C; --line-strong:#374244;
+  --paper:#0F1517; --paper-alt:#0B1112; --surface:#161F21; --surface-raised:#1B2527;
+
+  --teal-900:#BFE7E0; --teal-700:#4FB6AC; --teal-600:#63C2B8; --teal-500:#7FD1C7;
+  --teal-tint:rgba(79,182,172,.14); --teal-tint-strong:rgba(79,182,172,.22);
+  --palm-700:#86B98B; --palm-500:#9AC79E; --palm-tint:rgba(134,185,139,.14);
+  --sand-700:#D9AD66; --sand-600:#E0B978; --sand-500:#E0B978; --sand-tint:rgba(217,173,102,.14);
+
+  --crit-700:#E2836C; --crit-600:#D9756B; --crit-tint:rgba(217,117,99,.16);
+  --success-700:#8FCB96; --success-600:#7FAE84; --success-tint:rgba(127,174,132,.14);
+
+  --cat-study:#3FB5A6; --cat-work:#D9835B; --cat-project:#B08AD1; --cat-personal:#E0B978; --cat-general:#7FAE84;
+
+  --pr-high:#E2836C; --pr-high-tint:rgba(226,131,108,.16);
+  --pr-med:#D3A379; --pr-med-tint:rgba(211,163,121,.14);
+  --pr-low:#9C9583; --pr-low-tint:rgba(156,149,131,.14);
+
+  --shadow-card:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  --shadow-frame:0 24px 64px -24px rgba(0,0,0,.7), 0 2px 8px rgba(0,0,0,.3);
+  --shadow-pop:0 12px 32px -8px rgba(0,0,0,.55);
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--paper); color:var(--ink-900);
+  font-family:var(--font-body); font-size:15.5px; line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{display:block;}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; margin:0; text-wrap:balance;}
+p{margin:0;}
+button{font-family:inherit;}
+a{color:inherit;}
+::selection{background:var(--sand-tint); color:var(--ink-900);}
+:focus-visible{outline:2px solid var(--teal-500); outline-offset:2px; border-radius:4px;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.001ms !important; transition-duration:.001ms !important;} }
+
+.icon{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.icon-fill{fill:currentColor;stroke:none;}
+
+/* ============================= DOC CHROME (this deliverable's own wayfinding — not part of the product) ============================= */
+.doc-topbar{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:20px;
+  padding:12px 22px; background:#0B211F; color:#F1E9D8; border-bottom:1px solid rgba(241,233,216,.1);
+  backdrop-filter:blur(8px);
+}
+.doc-brandmini{display:flex; align-items:center; gap:9px; flex-shrink:0;}
+.doc-brandmini svg{width:26px;height:26px;color:#E0B978;}
+.doc-brandmini span{font-family:var(--font-display); font-size:17px; font-weight:600; letter-spacing:.02em;}
+.doc-nav{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; flex:1;}
+.doc-nav::-webkit-scrollbar{display:none;}
+.doc-nav a{
+  white-space:nowrap; font-size:12.5px; color:rgba(241,233,216,.6); text-decoration:none;
+  padding:7px 12px; border-radius:100px; transition:.15s;
+}
+.doc-nav a:hover{color:#F1E9D8; background:rgba(241,233,216,.08);}
+.theme-switch{
+  flex-shrink:0; display:flex; align-items:center; gap:6px; background:rgba(241,233,216,.08);
+  border:1px solid rgba(241,233,216,.14); border-radius:100px; padding:4px; cursor:pointer;
+}
+.theme-switch button{
+  border:none; background:transparent; color:rgba(241,233,216,.55); width:30px;height:30px; border-radius:100px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s;
+}
+.theme-switch button.active{background:#E0B978; color:#0B211F;}
+.theme-switch .icon{width:15px;height:15px;}
+
+main{max-width:1360px; margin:0 auto; padding:0 24px;}
+.doc-section{padding:76px 0; border-bottom:1px solid var(--line-soft);}
+.doc-section:last-of-type{border-bottom:none;}
+.doc-head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:36px; flex-wrap:wrap;}
+.doc-eyebrow{display:flex; align-items:center; gap:10px; color:var(--teal-600); font-size:12.5px; font-weight:600; letter-spacing:.08em; margin-bottom:10px;}
+.doc-eyebrow .num{font-family:var(--font-display); background:var(--teal-tint); color:var(--teal-700); width:26px;height:26px;border-radius:50%; display:flex;align-items:center;justify-content:center; font-size:12px;}
+.doc-title{font-size:27px; color:var(--ink-900);}
+.doc-desc{max-width:640px; color:var(--ink-700); font-size:14.5px; margin-top:10px; line-height:1.75;}
+.doc-note{font-size:12.5px; color:var(--ink-500); background:var(--paper-alt); border:1px dashed var(--line-strong); border-radius:10px; padding:10px 14px; max-width:420px;}
+
+/* ============================= PRODUCT COMPONENTS ============================= */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:11px;
+  font-size:14px; font-weight:600; padding:11px 20px; border:1px solid transparent; cursor:pointer;
+  transition:.15s ease; white-space:nowrap; font-family:var(--font-body);
+}
+.btn .icon{width:16px;height:16px;}
+.btn-primary{background:var(--teal-700); color:#FBF7EE;}
+.btn-primary:hover{background:var(--teal-600);}
+.btn-secondary{background:var(--surface); color:var(--ink-900); border-color:var(--line-strong);}
+.btn-secondary:hover{border-color:var(--teal-500); color:var(--teal-700);}
+.btn-ghost{background:transparent; color:var(--ink-700); border-color:transparent;}
+.btn-ghost:hover{background:var(--paper-alt); color:var(--ink-900);}
+.btn-danger{background:var(--crit-600); color:#FBF0EC;}
+.btn-danger:hover{background:var(--crit-700);}
+.btn-sm{padding:7px 14px; font-size:12.5px; border-radius:9px;}
+.btn-icon{padding:9px; border-radius:10px;}
+.btn:disabled{opacity:.42; cursor:not-allowed;}
+
+.field{display:flex; flex-direction:column; gap:7px;}
+.field label{font-size:12.5px; font-weight:600; color:var(--ink-700);}
+.field .hint{font-size:11.5px; color:var(--ink-500);}
+.field .error{font-size:11.5px; color:var(--crit-600); display:flex; align-items:center; gap:5px;}
+.input, .select, textarea.input{
+  width:100%; background:var(--surface); border:1px solid var(--line-strong); color:var(--ink-900);
+  border-radius:10px; padding:11px 14px; font-size:14px; font-family:var(--font-body); transition:.15s;
+}
+.input::placeholder{color:var(--ink-500);}
+.input:focus, .select:focus, textarea.input:focus{border-color:var(--teal-500); box-shadow:0 0 0 3px var(--teal-tint);}
+.input-icon-wrap{position:relative;}
+.input-icon-wrap .icon{position:absolute; inset-inline-start:14px; top:50%; transform:translateY(-50%); color:var(--ink-500); width:17px;height:17px;}
+.input-icon-wrap .input{padding-inline-start:40px;}
+.select{appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238C8372' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:left 12px center; padding-inline-end:14px; padding-inline-start:36px;}
+textarea.input{resize:vertical; min-height:88px; line-height:1.6;}
+.input-err{border-color:var(--crit-600) !important; box-shadow:0 0 0 3px var(--crit-tint) !important;}
+
+.chip-select{display:flex; flex-wrap:wrap; gap:8px;}
+.chip-opt{padding:9px 16px; border-radius:100px; border:1px solid var(--line-strong); font-size:13px; font-weight:600; color:var(--ink-700); cursor:pointer; background:var(--surface); display:flex; align-items:center; gap:6px; transition:.15s;}
+.chip-opt .dot{width:8px;height:8px;border-radius:50%;}
+.chip-opt.is-active{border-color:transparent; color:#fff; }
+.chip-opt.is-active.c-study{background:var(--cat-study);}
+.chip-opt.is-active.c-work{background:var(--cat-work);}
+.chip-opt.is-active.c-project{background:var(--cat-project);}
+.chip-opt.is-active.c-personal{background:var(--cat-personal);}
+.chip-opt.is-active.c-general{background:var(--cat-general);}
+.chip-opt.pr-high.is-active{background:var(--pr-high);}
+.chip-opt.pr-med.is-active{background:var(--pr-med);}
+.chip-opt.pr-low.is-active{background:var(--pr-low);}
+
+.checkbox{width:20px;height:20px; border-radius:7px; border:1.6px solid var(--line-strong); flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; background:var(--surface); transition:.18s;}
+.checkbox .icon{width:12px;height:12px; color:#fff; opacity:0; transform:scale(.5); transition:.18s;}
+.checkbox.is-checked{background:var(--teal-700); border-color:var(--teal-700);}
+.checkbox.is-checked .icon{opacity:1; transform:scale(1);}
+.checkbox-round{border-radius:50%;}
+
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:100px;}
+.badge .icon{width:11px;height:11px;}
+.badge-high{background:var(--pr-high-tint); color:var(--pr-high);}
+.badge-med{background:var(--pr-med-tint); color:var(--pr-med);}
+.badge-low{background:var(--pr-low-tint); color:var(--pr-low);}
+.badge-overdue{background:var(--crit-tint); color:var(--crit-700);}
+.tag-type{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:var(--ink-700);}
+.tag-type .dot{width:7px;height:7px;border-radius:50%;}
+
+.progress-track{height:8px; border-radius:100px; background:var(--line-soft); overflow:hidden;}
+.progress-fill{height:100%; border-radius:100px; background:var(--teal-600);}
+.ring{position:relative; width:76px;height:76px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+.ring::before{content:"";position:absolute; inset:0; border-radius:50%; background:conic-gradient(var(--ring-c,var(--teal-600)) calc(var(--pct,0)*1%), var(--line-soft) 0);}
+.ring::after{content:"";position:absolute; inset:8px; border-radius:50%; background:var(--surface);}
+.ring b{position:relative; z-index:1; font-size:15px; font-weight:700;}
+.ring-sm{width:52px;height:52px;} .ring-sm::after{inset:6px;} .ring-sm b{font-size:12px;}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow-card);}
+.pad-lg{padding:24px;} .pad-md{padding:18px;}
+
+.toast{display:flex; align-items:center; gap:12px; background:var(--ink-900); color:var(--paper); padding:13px 18px; border-radius:12px; font-size:13.5px; font-weight:500; box-shadow:var(--shadow-pop); max-width:340px;}
+.toast .icon{width:18px;height:18px; flex-shrink:0;}
+.toast-success .icon{color:var(--success-600);}
+.toast-error{background:var(--crit-700);}
+.toast-error .icon{color:#fff;}
+
+.skeleton{background:linear-gradient(90deg, var(--line-soft) 25%, var(--paper-alt) 50%, var(--line-soft) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite; border-radius:8px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* task row */
+.task-row{display:flex; align-items:flex-start; gap:14px; padding:15px 4px; border-bottom:1px solid var(--line-soft);}
+.task-row:last-child{border-bottom:none;}
+.task-row.is-overdue{border-inline-start:3px solid var(--crit-600); padding-inline-start:13px; background:linear-gradient(90deg, var(--crit-tint), transparent 40%); border-radius:8px;}
+.task-main{flex:1; min-width:0;}
+.task-title{font-size:14.5px; font-weight:600; color:var(--ink-900);}
+.task-title.done{color:var(--ink-500); text-decoration:line-through; font-weight:500;}
+.task-meta{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:7px;}
+.task-meta .meta-item{display:flex; align-items:center; gap:5px; font-size:12px; color:var(--ink-500);}
+.task-meta .icon{width:13px;height:13px;}
+
+/* ============================= APP SHELL ============================= */
+.frame{border-radius:var(--radius-xl); overflow:hidden; box-shadow:var(--shadow-frame); border:1px solid var(--line);}
+.frame-cap{display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--paper-alt); border-bottom:1px solid var(--line);}
+.frame-cap .dot{width:9px;height:9px;border-radius:50%; background:var(--line-strong);}
+.frame-cap .url{margin-inline-start:10px; font-size:11px; color:var(--ink-500); background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:3px 12px; flex:1; max-width:260px; text-align:center;}
+.frame-label{display:flex; align-items:center; justify-content:space-between; margin-top:14px;}
+.frame-label span{font-size:12px; color:var(--ink-500); font-weight:600;}
+.frame-label .bp{display:flex; align-items:center; gap:5px; color:var(--ink-500); font-size:11px;}
+
+.app-shell{display:flex; background:var(--paper); min-height:840px;}
+.app-sidebar{width:236px; flex-shrink:0; background:var(--surface-raised); border-inline-start:1px solid var(--line); display:flex; flex-direction:column; padding:22px 16px;}
+.app-brand{display:flex; align-items:center; gap:10px; padding:6px 8px 22px;}
+.app-brand svg{width:30px;height:30px; color:var(--teal-700);}
+.app-brand b{font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--ink-900);}
+.app-nav{display:flex; flex-direction:column; gap:3px;}
+.app-nav a{display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; font-size:13.5px; font-weight:600; color:var(--ink-700); text-decoration:none; transition:.15s;}
+.app-nav a .icon{width:18px;height:18px;}
+.app-nav a:hover{background:var(--paper-alt); color:var(--ink-900);}
+.app-nav a.active{background:var(--teal-tint); color:var(--teal-700);}
+.app-sidebar-foot{margin-top:auto; display:flex; align-items:center; gap:10px; padding:12px; border-top:1px solid var(--line-soft); border-radius:12px;}
+.avatar{width:34px;height:34px; border-radius:50%; background:linear-gradient(135deg, var(--teal-600), var(--palm-700)); flex-shrink:0; display:flex;align-items:center;justify-content:center; color:#fff; font-family:var(--font-display); font-size:13px; font-weight:700;}
+.app-sidebar-foot .who{font-size:12.5px; font-weight:600; color:var(--ink-900);}
+.app-sidebar-foot .role{font-size:11px; color:var(--ink-500);}
+
+.app-main{flex:1; min-width:0; padding:28px 34px; overflow:auto;}
+.app-topbar{display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:28px; flex-wrap:wrap;}
+.app-topbar h1{font-size:23px;}
+.app-topbar .sub{font-size:12.5px; color:var(--ink-500); margin-top:5px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+.app-topbar .actions{display:flex; gap:10px; align-items:center;}
+
+.section-title{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.section-title h2{font-size:16px;}
+.section-title .link{font-size:12px; font-weight:600; color:var(--teal-600); text-decoration:none;}
+
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.grid-2{display:grid; grid-template-columns:1.4fr 1fr; gap:16px;}
+
+/* stat card */
+.stat-card{display:flex; align-items:center; justify-content:space-between; gap:14px;}
+.stat-card .lbl{font-size:13px; font-weight:600; color:var(--ink-700);}
+.stat-card .val{font-size:13px; color:var(--ink-500); margin-top:6px;}
+.stat-card .val b{color:var(--ink-900); font-size:15px; font-weight:700;}
+
+/* decorative: subtle wave + palm texture */
+.motif-wave{position:absolute; inset-inline:0; bottom:0; height:120px; opacity:.5; pointer-events:none;}
+.lattice-bg{background-image:
+  linear-gradient(135deg, var(--line-soft) 1px, transparent 1px),
+  linear-gradient(45deg, var(--line-soft) 1px, transparent 1px);
+  background-size:26px 26px; background-position:0 0, 13px 13px;}
+
+/* mobile bottom nav */
+.mnav{display:flex; align-items:center; justify-content:space-around; background:var(--surface-raised); border-top:1px solid var(--line); padding:9px 6px 12px;}
+.mnav a{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:10px; font-weight:600; color:var(--ink-500); text-decoration:none; flex:1; padding:4px;}
+.mnav a .icon{width:20px;height:20px;}
+.mnav a.active{color:var(--teal-700);}
+
+/* responsive helpers for the doc page itself */
+@media (max-width:900px){
+  .grid-3{grid-template-columns:1fr;}
+  .grid-2{grid-template-columns:1fr;}
+  .doc-nav{display:none;}
+}
+</style>
+
+<!-- =======================================================================
+     ICON SPRITE — one hand-drawn minimal line set, reused via <use>
+======================================================================= -->
+<svg style="display:none" aria-hidden="true">
+<defs>
+<symbol id="i-check" viewBox="0 0 24 24"><polyline points="4 13 9.5 18.5 20 6"/></symbol>
+<symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></symbol>
+<symbol id="i-cal-days" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><circle cx="8.3" cy="14" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="14" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.7" cy="14" r="1.1" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 10.5a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14.5 6 10.5Z"/><path d="M10 19a2.2 2.2 0 0 0 4 0"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4.5v15M4.5 12h15"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l.9-4.2L15.6 5.1a1.8 1.8 0 0 1 2.5 0l.8.8a1.8 1.8 0 0 1 0 2.5L8.2 19.1 4 20Z"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7M7.5 7l.8 12a2 2 0 0 0 2 1.9h3.4a2 2 0 0 0 2-1.9l.8-12"/></symbol>
+<symbol id="i-chev-d" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="i-chev-l" viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></symbol>
+<symbol id="i-chev-r" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.3"/><path d="M12 3v2.2M12 18.8V21M4.2 12H2M22 12h-2.2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.5 8.5 0 1 1 10.3 4.2 7 7 0 0 0 20 14.2Z"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M9.5 14.5 14.5 9.5"/><path d="M11 6.5l1.4-1.4a4 4 0 0 1 5.6 5.6L16.6 12"/><path d="M13 17.5l-1.4 1.4a4 4 0 0 1-5.6-5.6L7.4 12"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5h12V10"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.3" cy="6.5" r="1" fill="currentColor" stroke="none"/><circle cx="4.3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4.3" cy="17.5" r="1" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M4 20h16"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h9l4.5 4.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M15 3.5V8h4.5M8.5 12.5h7M8.5 16h5"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M12 3.5v2.3M12 18.2v2.3M4.9 7.3l2 1.15M17.1 15.55l2 1.15M4.9 16.7l2-1.15M17.1 8.45l2-1.15M3.5 12h2.3M18.2 12h2.3"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 4.5h11l-2.6 3.7L17 12H6"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4.2 21 19.5H3L12 4.2Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".2" fill="currentColor" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.4"/><path d="M4.5 7 12 13l7.5-6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4"/><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3s-1 3-4 5.5C5 11 4.5 13.5 5.5 16a6.5 6.5 0 0 0 13 0c.6-3-1-4.5-2-6-0.3 2-1.3 3-2 3 1-3-.5-6-2.5-10Z"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4.5h10v5a5 5 0 0 1-10 0v-5Z"/><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5A3.5 3.5 0 0 1 16.5 11M10 15v2.5M14 15v2.5M8 21h8M9 17.5h6v3.5H9z"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15.5 12 9l6 6.5"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M6 8.5 12 15l6-6.5"/></symbol>
+<symbol id="i-athar" viewBox="0 0 48 48">
+  <path d="M27 6.5c-2.2 6.6-5.3 15-7.6 21.8-1.9 5.5-4 9.3-9 11.6" stroke-width="3.1"/>
+  <path d="M25.5 12c3.6-2.6 7-3.6 10.3-3" stroke-width="2.5"/>
+  <path d="M23.7 16.6c4-1 7.7-.7 11.6 1.4" stroke-width="2.5"/>
+  <circle cx="8.6" cy="41.4" r="1.35" fill="currentColor" stroke="none"/>
+  <circle cx="4.4" cy="43.3" r=".9" fill="currentColor" stroke="none"/>
+</symbol>
+</defs>
+</svg>
+
+<!-- =======================================================================
+     DOC TOPBAR
+======================================================================= -->
+<div class="doc-topbar">
+  <div class="doc-brandmini"><svg><use href="#i-athar"/></svg><span>أَثَر</span></div>
+  <nav class="doc-nav">
+    <a href="#cover">الغلاف</a><a href="#logo">الشعار</a><a href="#palette">الألوان</a><a href="#type">الطباعة</a>
+    <a href="#s01">تسجيل الدخول</a><a href="#s02">الرئيسية</a><a href="#s03">كل المهام</a><a href="#s04">إضافة مهمة</a>
+    <a href="#s05">تعديل مهمة</a><a href="#s06">تأكيد الحذف</a><a href="#s07">التقويم</a><a href="#s08">الإحصائيات</a>
+    <a href="#s09">ملاحظاتي</a><a href="#s10">الإعدادات</a><a href="#s11">استعادة كلمة المرور</a><a href="#s12">حالات فارغة</a>
+    <a href="#s13">المهام المتأخرة</a><a href="#s14">إنجاز مهمة</a><a href="#responsive">الاستجابة</a><a href="#components">المكوّنات</a>
+  </nav>
+  <div class="theme-switch" id="themeSwitch">
+    <button id="btnLight" class="active" aria-label="الوضع الفاتح"><svg class="icon"><use href="#i-sun"/></svg></button>
+    <button id="btnDark" aria-label="الوضع الداكن"><svg class="icon"><use href="#i-moon"/></svg></button>
+  </div>
+</div>
+
+<main>
+
+<!-- =======================================================================
+     COVER
+======================================================================= -->
+<section class="doc-section" id="cover" style="padding-top:64px;">
+  <div style="position:relative; border-radius:28px; overflow:hidden; background:linear-gradient(160deg,var(--teal-900) 0%, #0d3835 46%, var(--palm-700) 130%); padding:88px 56px; text-align:center; box-shadow:var(--shadow-frame);">
+    <svg viewBox="0 0 600 200" style="position:absolute; inset-inline-start:0; bottom:0; width:100%; height:170px; opacity:.16;" preserveAspectRatio="none">
+      <path d="M0 120 Q75 90 150 120 T300 120 T450 120 T600 120 V200 H0 Z" fill="#E0B978"/>
+      <path d="M0 150 Q75 130 150 150 T300 150 T450 150 T600 150 V200 H0 Z" fill="#F1E9D8" opacity=".5"/>
+    </svg>
+    <svg viewBox="0 0 48 48" style="width:64px;height:64px; margin:0 auto 26px; color:#E0B978; position:relative;"><use href="#i-athar"/></svg>
+    <h1 style="font-size:56px; color:#FBF6EA; letter-spacing:.01em; position:relative;">أَثَر</h1>
+    <p style="font-family:var(--font-display); font-size:14px; letter-spacing:.5em; color:#E0B978; margin-top:6px; position:relative;">A T H A R</p>
+    <p style="max-width:520px; margin:26px auto 0; color:rgba(251,246,234,.82); font-size:16px; line-height:1.9; position:relative;">
+      رتّبي يومك، اصنعي إنجازك، واتركي أثرًا.<br>نظام تصميم كامل لتطبيق إنتاجية شخصي — هادئ، طموح، وقريب من الساحل.
+    </p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:34px; flex-wrap:wrap; position:relative;">
+      <span style="font-size:11.5px; color:rgba(251,246,234,.65); border:1px solid rgba(251,246,234,.25); border-radius:100px; padding:6px 14px;">واجهة عربية RTL</span>
+      <span style="font-size:11.5px; color:rgba(251,246,234,.65); border:1px solid rgba(251,246,234,.25); border-radius:100px; padding:6px 14px;">وضع فاتح وداكن</span>
+      <span style="font-size:11.5px; color:rgba(251,246,234,.65); border:1px solid rgba(251,246,234,.25); border-radius:100px; padding:6px 14px;">مستوحى من القطيف</span>
+      <span style="font-size:11.5px; color:rgba(251,246,234,.65); border:1px solid rgba(251,246,234,.25); border-radius:100px; padding:6px 14px;">١٤ شاشة + مكتبة مكوّنات</span>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     LOGO SUITE
+======================================================================= -->
+<section class="doc-section" id="logo">
+  <div class="doc-head">
+    <div>
+      <div class="doc-eyebrow"><span class="num">۰</span>هوية العلامة</div>
+      <h2 class="doc-title">الشعار</h2>
+      <p class="doc-desc">الرمز يدمج حرف الألف المائل (كسعفة نخيل منحنية)، مع فرعين علويين يشيران إلى ورقة النخيل وهمزة الألف معًا، وذيل يتحول إلى موجة تتلاشى في نقاط — الأثر الذي يُترك خلفها. الخط: El Messiri للهوية، وIBM Plex Sans Arabic لواجهة الاستخدام.</p>
+    </div>
+  </div>
+
+  <div class="grid-3" style="grid-template-columns:repeat(4,1fr); margin-bottom:18px;">
+    <div class="card pad-lg" style="text-align:center; background:var(--paper);">
+      <svg viewBox="0 0 48 48" style="width:56px;height:56px;margin:0 auto 14px; color:var(--teal-700);"><use href="#i-athar"/></svg>
+      <p style="font-size:12px; font-weight:600; color:var(--ink-700);">الشعار الأساسي — علامة فقط</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; background:var(--paper);">
+      <svg viewBox="0 0 48 48" style="width:44px;height:44px;margin:0 auto 12px; color:var(--teal-700);"><use href="#i-athar"/></svg>
+      <h3 style="font-family:var(--font-display); font-size:22px;">أَثَر</h3>
+      <p style="font-size:12px; font-weight:600; color:var(--ink-700); margin-top:10px;">شعار عمودي كامل</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; background:var(--paper);">
+      <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+        <svg viewBox="0 0 48 48" style="width:34px;height:34px; color:var(--teal-700);"><use href="#i-athar"/></svg>
+        <h3 style="font-family:var(--font-display); font-size:19px;">أَثَر</h3>
+      </div>
+      <p style="font-size:12px; font-weight:600; color:var(--ink-700); margin-top:14px;">شعار أفقي</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; background:var(--teal-900);">
+      <svg viewBox="0 0 48 48" style="width:44px;height:44px;margin:0 auto 12px; color:#E0B978;"><use href="#i-athar"/></svg>
+      <h3 style="font-family:var(--font-display); font-size:22px; color:#FBF6EA;">أَثَر</h3>
+      <p style="font-size:12px; font-weight:600; color:rgba(251,246,234,.7); margin-top:10px;">على خلفية داكنة</p>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card pad-lg" style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+      <div style="width:64px;height:64px; border-radius:16px; background:var(--teal-700); display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 48 48" style="width:34px;height:34px; color:#E0B978;"><use href="#i-athar"/></svg>
+      </div>
+      <p style="font-size:12px; color:var(--ink-500);">أيقونة تطبيق / Favicon</p>
+    </div>
+    <div class="card pad-lg" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+      <svg viewBox="0 0 48 48" style="width:30px;height:30px; color:var(--ink-900);"><use href="#i-athar"/></svg>
+      <p style="font-size:12px; color:var(--ink-500);">أحادي اللون — أسود</p>
+    </div>
+    <div class="card pad-lg" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:var(--sand-tint);">
+      <svg viewBox="0 0 48 48" style="width:30px;height:30px; color:var(--sand-700);"><use href="#i-athar"/></svg>
+      <p style="font-size:12px; color:var(--ink-500);">على خلفية الرمل الدافئ</p>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     COLOR PALETTE
+======================================================================= -->
+<section class="doc-section" id="palette">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">۰</span>نظام اللون</div>
+    <h2 class="doc-title">الألوان</h2>
+    <p class="doc-desc">أزرق البحر العميق، أخضر النخيل، رمل ذهبي دافئ، وعاج كريمي — بلا أزرق أو أخضر صارخ. الوضع الداكن مبني بخطوات مستقلة، لا مجرد عكس الفاتح.</p>
+  </div></div>
+
+  <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:10px;">الألوان الأساسية</p>
+  <div class="grid-3" style="grid-template-columns:repeat(5,1fr); margin-bottom:32px;">
+    <div class="card" style="overflow:hidden;"><div style="height:76px; background:var(--teal-700);"></div><div class="pad-md"><b style="font-size:12.5px;">الأخزق العميق</b><p style="font-size:11px;color:var(--ink-500); margin-top:4px;">أساسي — teal-700</p></div></div>
+    <div class="card" style="overflow:hidden;"><div style="height:76px; background:var(--palm-700);"></div><div class="pad-md"><b style="font-size:12.5px;">أخضر النخيل</b><p style="font-size:11px;color:var(--ink-500); margin-top:4px;">ثانوي — palm-700</p></div></div>
+    <div class="card" style="overflow:hidden;"><div style="height:76px; background:var(--sand-600);"></div><div class="pad-md"><b style="font-size:12.5px;">رمل ذهبي</b><p style="font-size:11px;color:var(--ink-500); margin-top:4px;">مميّز — sand-600</p></div></div>
+    <div class="card" style="overflow:hidden;"><div style="height:76px; background:var(--paper-alt); border-bottom:1px solid var(--line);"></div><div class="pad-md"><b style="font-size:12.5px;">عاجي دافئ</b><p style="font-size:11px;color:var(--ink-500); margin-top:4px;">خلفية — paper</p></div></div>
+    <div class="card" style="overflow:hidden;"><div style="height:76px; background:var(--ink-900);"></div><div class="pad-md"><b style="font-size:12.5px;">فحمي عميق</b><p style="font-size:11px;color:var(--ink-500); margin-top:4px;">نص — ink-900</p></div></div>
+  </div>
+
+  <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:10px;">ألوان أنواع المهام (نظام تصنيفي — مُتحقَّق من تباينه لأصحاب عمى الألوان)</p>
+  <div class="grid-3" style="grid-template-columns:repeat(5,1fr); margin-bottom:32px;">
+    <div class="card pad-md" style="display:flex;align-items:center;gap:9px;"><span style="width:13px;height:13px;border-radius:50%;background:var(--cat-study);flex-shrink:0;"></span><span style="font-size:12.5px;font-weight:600;">دراسة</span></div>
+    <div class="card pad-md" style="display:flex;align-items:center;gap:9px;"><span style="width:13px;height:13px;border-radius:50%;background:var(--cat-work);flex-shrink:0;"></span><span style="font-size:12.5px;font-weight:600;">عمل</span></div>
+    <div class="card pad-md" style="display:flex;align-items:center;gap:9px;"><span style="width:13px;height:13px;border-radius:50%;background:var(--cat-project);flex-shrink:0;"></span><span style="font-size:12.5px;font-weight:600;">مشروع</span></div>
+    <div class="card pad-md" style="display:flex;align-items:center;gap:9px;"><span style="width:13px;height:13px;border-radius:50%;background:var(--cat-personal);flex-shrink:0;"></span><span style="font-size:12.5px;font-weight:600;">شخصي</span></div>
+    <div class="card pad-md" style="display:flex;align-items:center;gap:9px;"><span style="width:13px;height:13px;border-radius:50%;background:var(--cat-general);flex-shrink:0;"></span><span style="font-size:12.5px;font-weight:600;">عام</span></div>
+  </div>
+
+  <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:10px;">الأولوية (تدرّج بلون واحد — من الحضور القوي إلى التلاشي) وحالة التأخّر</p>
+  <div class="grid-3" style="grid-template-columns:repeat(4,1fr);">
+    <div class="card pad-md"><span class="badge badge-high">عالية</span></div>
+    <div class="card pad-md"><span class="badge badge-med">متوسطة</span></div>
+    <div class="card pad-md"><span class="badge badge-low">منخفضة</span></div>
+    <div class="card pad-md"><span class="badge badge-overdue"><svg class="icon"><use href="#i-warn"/></svg>متأخرة</span></div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     TYPOGRAPHY
+======================================================================= -->
+<section class="doc-section" id="type">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">۰</span>نظام الطباعة</div>
+    <h2 class="doc-title">الطباعة</h2>
+    <p class="doc-desc">El Messiri للعناوين والهوية — طابع أنيق ومميز. IBM Plex Sans Arabic لواجهة الاستخدام والأرقام — وضوح عالٍ في النصوص الطويلة ولوحات القياس.</p>
+  </div></div>
+  <div class="card pad-lg">
+    <div style="display:flex; flex-direction:column; gap:22px;">
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid var(--line-soft); padding-bottom:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">Display / 40</span><span style="font-family:var(--font-display); font-size:40px; font-weight:600;">رتّبي يومك واصنعي أثرك</span></div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid var(--line-soft); padding-bottom:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">H1 / 27</span><span style="font-family:var(--font-display); font-size:27px; font-weight:600;">مهمتك الأهم اليوم</span></div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid var(--line-soft); padding-bottom:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">H2 / 18</span><span style="font-family:var(--font-display); font-size:18px; font-weight:600;">مهام هذا الأسبوع</span></div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid var(--line-soft); padding-bottom:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">Body / 15.5</span><span style="font-size:15.5px;">مساحة هادئة لتنظيم يومك، والتركيز على ما يستحق وقتك، وترك أثر يبقى.</span></div>
+      <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid var(--line-soft); padding-bottom:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">Label / 12.5</span><span style="font-size:12.5px; font-weight:600; color:var(--ink-700);">اسم المهمة · الأولوية · الموعد النهائي</span></div>
+      <div style="display:flex; align-items:baseline; gap:20px;"><span style="font-size:11px;color:var(--ink-500);width:90px;flex-shrink:0;">Stat / 34</span><span style="font-size:34px; font-weight:700; font-family:var(--font-body);">٪69</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 01 — LOGIN
+======================================================================= -->
+<section class="doc-section" id="s01">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١</span>الشاشة ٠١</div>
+    <h2 class="doc-title">تسجيل الدخول</h2>
+    <p class="doc-desc">تكوين هادئ بلوحة ساحلية مجرّدة — منحنيات موجة رفيعة وأثر نخلة خافت، دون أي صور سياحية مباشرة.</p>
+  </div></div>
+
+  <div class="frame">
+    <div class="frame-cap"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">athar.app / تسجيل الدخول</span></div>
+    <div style="display:flex; min-height:640px;">
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:40px; background:var(--paper);">
+        <div style="width:100%; max-width:360px;">
+          <svg viewBox="0 0 48 48" style="width:42px;height:42px; color:var(--teal-700); margin-bottom:18px;"><use href="#i-athar"/></svg>
+          <h1 style="font-size:26px;">تسجيل الدخول إلى أَثَر</h1>
+          <p style="font-size:13.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">رتّبي يومك، اصنعي إنجازك، واتركي أثرًا.</p>
+          <form style="display:flex; flex-direction:column; gap:16px; margin-top:30px;">
+            <div class="field">
+              <label>البريد الإلكتروني</label>
+              <div class="input-icon-wrap"><svg class="icon"><use href="#i-mail"/></svg><input class="input" placeholder="you@example.com" dir="ltr" style="text-align:right;"></div>
+            </div>
+            <div class="field">
+              <label>كلمة المرور</label>
+              <div class="input-icon-wrap"><svg class="icon"><use href="#i-lock"/></svg><input class="input" type="password" placeholder="••••••••" style="padding-inline-end:40px;"><svg class="icon" style="position:absolute; inset-inline-end:14px; top:50%; transform:translateY(-50%); color:var(--ink-500); width:17px;height:17px;"><use href="#i-eye"/></svg></div>
+            </div>
+            <a href="#" style="font-size:12.5px; color:var(--teal-600); font-weight:600; text-decoration:none; align-self:flex-start;">نسيت كلمة المرور؟</a>
+            <button class="btn btn-primary" style="width:100%; padding:13px; margin-top:6px;">تسجيل الدخول</button>
+          </form>
+        </div>
+      </div>
+      <div style="flex:1; position:relative; overflow:hidden; background:linear-gradient(165deg,var(--teal-900),#123f3b 55%,var(--palm-700));">
+        <svg viewBox="0 0 400 640" style="position:absolute; inset:0; width:100%; height:100%; opacity:.9;" preserveAspectRatio="xMidYMid slice">
+          <path d="M0 420 Q100 380 200 420 T400 420" stroke="#E0B978" stroke-width="1.4" fill="none" opacity=".5"/>
+          <path d="M0 460 Q100 425 200 460 T400 460" stroke="#F1E9D8" stroke-width="1.4" fill="none" opacity=".3"/>
+          <path d="M0 500 Q100 470 200 500 T400 500" stroke="#E0B978" stroke-width="1.4" fill="none" opacity=".2"/>
+        </svg>
+        <svg viewBox="0 0 48 48" style="position:absolute; width:210px;height:210px; color:#F1E9D8; opacity:.08; top:60px; inset-inline-end:-30px;"><use href="#i-athar"/></svg>
+        <div style="position:absolute; bottom:56px; inset-inline:56px; color:#F1E9D8;">
+          <p style="font-family:var(--font-display); font-size:21px; line-height:1.7;">"مساحتك الخاصة لتعرفي ماذا أنجزتِ، وماذا تحتاجين، وما الذي يستحق تركيزك الآن."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 02 — DASHBOARD
+======================================================================= -->
+<section class="doc-section" id="s02">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٢</span>الشاشة ٠٢</div>
+    <h2 class="doc-title">الرئيسية — لوحة التحكم</h2>
+    <p class="doc-desc">تحية زمنية، المهمة الأهم، مؤشرات الإنجاز اليومي/الأسبوعي/الشهري، الإنجازات، مهام الأسبوع مجمّعة حسب اليوم، وأقرب موعد نهائي.</p>
+  </div></div>
+
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a class="active"><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+
+    <div class="app-main">
+      <div class="app-topbar">
+        <div>
+          <h1>صباح الخير ✨</h1>
+          <div class="sub"><span>الأحد، ٢٣ أغسطس ٢٠٢٦</span><span>·</span><span>٠٩:١٤ ص</span><span>·</span><span style="color:var(--sand-700); font-weight:600;">كل خطوة صغيرة اليوم، أثر كبير غدًا.</span></div>
+        </div>
+        <div class="actions"><button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-bell"/></svg>التنبيهات</button><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>مهمة جديدة</button></div>
+      </div>
+
+      <!-- most important task -->
+      <div class="card pad-lg" style="background:linear-gradient(120deg,var(--teal-900),#123f3b); color:#F1E9D8; margin-bottom:22px; position:relative; overflow:hidden;">
+        <svg viewBox="0 0 48 48" style="position:absolute; width:150px;height:150px; color:#F1E9D8; opacity:.06; top:-20px; inset-inline-end:-20px;"><use href="#i-athar"/></svg>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; position:relative;">
+          <div style="flex:1; min-width:240px;">
+            <p style="font-size:11.5px; font-weight:700; letter-spacing:.06em; color:#E0B978; text-transform:uppercase;">مهمتك الأهم اليوم</p>
+            <h2 style="font-size:22px; color:#FBF6EA; margin-top:10px;">تسليم الفصل الثالث من مشروع التخرج</h2>
+            <div style="display:flex; gap:16px; margin-top:16px; flex-wrap:wrap;">
+              <span class="badge badge-high" style="background:rgba(226,131,108,.18); color:#F0A98F;"><svg class="icon"><use href="#i-flag"/></svg>أولوية عالية</span>
+              <span class="tag-type" style="color:rgba(241,233,216,.75);"><svg class="icon"><use href="#i-clock"/></svg>الموعد النهائي اليوم، ٩:٠٠ م</span>
+            </div>
+          </div>
+          <div style="text-align:center; flex-shrink:0;">
+            <p style="font-size:11px; color:rgba(241,233,216,.6);">الوقت المتبقي</p>
+            <p style="font-family:var(--font-body); font-size:30px; font-weight:700; color:#E0B978; margin-top:4px;">٣س ٢٠د</p>
+            <button class="btn btn-sm" style="background:#E0B978; color:#0A2E2B; margin-top:10px; width:100%;"><svg class="icon"><use href="#i-check"/></svg>إنجاز المهمة</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI cards -->
+      <div class="grid-3" style="margin-bottom:22px;">
+        <div class="card pad-lg stat-card"><div><p class="lbl">إنجاز اليوم</p><p class="val"><b>3</b> / 5 مهام</p></div><div class="ring" style="--pct:60; --ring-c:var(--teal-600);"><b>٪60</b></div></div>
+        <div class="card pad-lg stat-card"><div><p class="lbl">إنجاز هذا الأسبوع</p><p class="val"><b>14</b> / 22 مهمة</p></div><div class="ring" style="--pct:64; --ring-c:var(--palm-700);"><b>٪64</b></div></div>
+        <div class="card pad-lg stat-card"><div><p class="lbl">إنجاز هذا الشهر</p><p class="val"><b>48</b> / 70 مهمة</p></div><div class="ring" style="--pct:69; --ring-c:var(--sand-600);"><b>٪69</b></div></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:22px;">
+        <!-- achievements -->
+        <div class="card pad-lg">
+          <div class="section-title"><h2>إنجازاتي</h2></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div style="background:var(--paper-alt); border-radius:12px; padding:14px;"><p style="font-size:11.5px; color:var(--ink-500);">المنجزة اليوم</p><p style="font-size:22px; font-weight:700; margin-top:4px;">3</p></div>
+            <div style="background:var(--paper-alt); border-radius:12px; padding:14px;"><p style="font-size:11.5px; color:var(--ink-500);">المنجزة هذا الأسبوع</p><p style="font-size:22px; font-weight:700; margin-top:4px;">14</p></div>
+            <div style="background:var(--paper-alt); border-radius:12px; padding:14px;"><p style="font-size:11.5px; color:var(--ink-500);">المنجزة هذا الشهر</p><p style="font-size:22px; font-weight:700; margin-top:4px;">48</p></div>
+            <div style="background:var(--sand-tint); border-radius:12px; padding:14px;"><p style="font-size:11.5px; color:var(--sand-700); display:flex; align-items:center; gap:5px;"><svg class="icon" style="width:12px;height:12px;"><use href="#i-fire"/></svg>أطول سلسلة إنجاز</p><p style="font-size:22px; font-weight:700; margin-top:4px; color:var(--sand-700);">9 أيام</p></div>
+          </div>
+        </div>
+        <!-- nearest deadline -->
+        <div class="card pad-lg" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+          <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">أقرب موعد نهائي</p>
+          <div class="ring" style="width:96px;height:96px; --pct:82; --ring-c:var(--crit-600);"><b style="font-size:12px;">٣س ٢٠د</b></div>
+          <p style="font-size:13.5px; font-weight:600; margin-top:14px;">تسليم الفصل الثالث</p>
+          <p style="font-size:11.5px; color:var(--ink-500); margin-top:3px;">اليوم، ٩:٠٠ م</p>
+        </div>
+      </div>
+
+      <!-- weekly tasks grouped by day -->
+      <div class="card pad-lg">
+        <div class="section-title"><h2>مهام هذا الأسبوع</h2><a class="link">عرض الكل</a></div>
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div>
+            <p style="font-size:12px; font-weight:700; color:var(--teal-700); margin-bottom:6px;">السبت</p>
+            <div class="task-row is-overdue">
+              <div class="checkbox checkbox-round"></div>
+              <div class="task-main"><p class="task-title">مراجعة عرض الاجتماع الأسبوعي</p>
+                <div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span><span class="badge badge-overdue"><svg class="icon"><use href="#i-warn"/></svg>متأخرة منذ يوم</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:12px; font-weight:700; color:var(--teal-700); margin-bottom:6px;">الأحد</p>
+            <div class="task-row">
+              <div class="checkbox checkbox-round"></div>
+              <div class="task-main"><p class="task-title">تسليم الفصل الثالث من مشروع التخرج</p>
+                <div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span><span class="badge badge-high"><svg class="icon"><use href="#i-flag"/></svg>عالية</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>٩:٠٠ م</span></div>
+              </div>
+            </div>
+            <div class="task-row">
+              <div class="checkbox checkbox-round"></div>
+              <div class="task-main"><p class="task-title">مذاكرة الفصل الخامس — مادة الإحصاء</p>
+                <div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span><span class="badge badge-med">متوسطة</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>٥:٠٠ م</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:12px; font-weight:700; color:var(--teal-700); margin-bottom:6px;">الإثنين</p>
+            <div class="task-row">
+              <div class="checkbox checkbox-round"></div>
+              <div class="task-main"><p class="task-title">موعد الرياضة الصباحي</p>
+                <div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span><span class="badge badge-low">منخفضة</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>٦:٣٠ ص</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 03 — ALL TASKS
+======================================================================= -->
+<section class="doc-section" id="s03">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٣</span>الشاشة ٠٣</div>
+    <h2 class="doc-title">كل المهام</h2>
+    <p class="doc-desc">ترتيب تلقائي بلا فلاتر: المتأخرة أولًا، ثم الأولوية العالية فالمتوسطة فالمنخفضة، وضمن كل مستوى الأقرب موعدًا أولًا. المهام المنجزة تختفي من القائمة.</p>
+  </div></div>
+
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a class="active"><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+    <div class="app-main">
+      <div class="app-topbar">
+        <div><h1>كل المهام</h1><div class="sub"><span>23 مهمة نشطة</span></div></div>
+        <div class="actions">
+          <div class="input-icon-wrap" style="width:220px;"><svg class="icon"><use href="#i-search"/></svg><input class="input" placeholder="ابحثي عن مهمة…"></div>
+          <button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>إضافة مهمة</button>
+        </div>
+      </div>
+      <div class="card pad-lg">
+        <div class="task-row is-overdue">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">مراجعة عرض الاجتماع الأسبوعي</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span><span class="badge badge-overdue"><svg class="icon"><use href="#i-warn"/></svg>متأخرة منذ يوم</span></div></div>
+        </div>
+        <div class="task-row">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">تسليم الفصل الثالث من مشروع التخرج</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span><span class="badge badge-high"><svg class="icon"><use href="#i-flag"/></svg>عالية</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>اليوم، ٩:٠٠ م</span></div></div>
+        </div>
+        <div class="task-row">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">تجهيز عرض تقديمي لاجتماع العميل</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span><span class="badge badge-high"><svg class="icon"><use href="#i-flag"/></svg>عالية</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>غدًا، ١١:٠٠ ص</span></div></div>
+        </div>
+        <div class="task-row">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">مذاكرة الفصل الخامس — مادة الإحصاء</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span><span class="badge badge-med">متوسطة</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>اليوم، ٥:٠٠ م</span></div></div>
+        </div>
+        <div class="task-row">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">تجديد اشتراك التخزين السحابي</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-general);"></span>عام</span><span class="badge badge-med">متوسطة</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>الخميس</span></div></div>
+        </div>
+        <div class="task-row">
+          <div class="checkbox checkbox-round"></div>
+          <div class="task-main"><p class="task-title">موعد الرياضة الصباحي</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span><span class="badge badge-low">منخفضة</span><span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>الإثنين، ٦:٣٠ ص</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 04 — ADD TASK
+======================================================================= -->
+<section class="doc-section" id="s04">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٤</span>الشاشة ٠٤</div>
+    <h2 class="doc-title">إضافة مهمة</h2>
+    <p class="doc-desc">نافذة كاملة الحقول، تدعم المهام متعددة الأيام، ومهام فرعية اختيارية عند اختيار نوع "دراسة".</p>
+  </div></div>
+  <div class="frame" style="background:rgba(15,21,23,.45); padding:44px 24px; display:flex; justify-content:center;">
+    <div class="card pad-lg" style="width:100%; max-width:600px; background:var(--surface-raised);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;">
+        <h2 style="font-size:19px;">إضافة مهمة جديدة</h2>
+        <button class="btn btn-ghost btn-icon"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div class="field"><label>اسم المهمة</label><input class="input" value="تسليم الفصل الثالث من مشروع التخرج"></div>
+
+        <div class="field"><label>النوع</label>
+          <div class="chip-select">
+            <span class="chip-opt c-study"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span>
+            <span class="chip-opt c-work"><span class="dot" style="background:var(--cat-work);"></span>عمل</span>
+            <span class="chip-opt is-active c-project"><span class="dot" style="background:#fff;"></span>مشروع</span>
+            <span class="chip-opt c-personal"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span>
+            <span class="chip-opt c-general"><span class="dot" style="background:var(--cat-general);"></span>عام</span>
+          </div>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+          <div class="field"><label>تاريخ المهمة</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-cal"/></svg><input class="input" value="23 أغسطس 2026"></div></div>
+          <div class="field"><label>وقت المهمة</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-clock"/></svg><input class="input" value="09:00 ص"></div></div>
+        </div>
+        <div class="doc-note" style="max-width:none;">يمكن للمهمة أن تمتد لعدة أيام — أضيفي تاريخ نهاية اختياريًا من هنا.</div>
+        <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+          <div class="field"><label>الموعد النهائي</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-cal"/></svg><input class="input" value="23 أغسطس 2026"></div></div>
+          <div class="field"><label>وقت الموعد النهائي</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-clock"/></svg><input class="input" value="09:00 م"></div></div>
+        </div>
+
+        <div class="field"><label>الأولوية</label>
+          <div class="chip-select">
+            <span class="chip-opt pr-high is-active"><span class="dot" style="background:#fff;"></span>عالية</span>
+            <span class="chip-opt pr-med"><span class="dot" style="background:var(--pr-med);"></span>متوسطة</span>
+            <span class="chip-opt pr-low"><span class="dot" style="background:var(--pr-low);"></span>منخفضة</span>
+          </div>
+        </div>
+
+        <div class="field"><label>مهام فرعية <span style="font-weight:400; color:var(--ink-500);">(اختياري لمهام الدراسة)</span></label>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;"><div class="checkbox is-checked"><svg class="icon"><use href="#i-check"/></svg></div><span style="font-size:13.5px;">قراءة الفصل الثالث كاملًا</span></div>
+            <div style="display:flex; align-items:center; gap:10px;"><div class="checkbox"></div><span style="font-size:13.5px;">تلخيص النقاط الرئيسية</span></div>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:2px;"><svg class="icon" style="color:var(--ink-500); width:15px;height:15px;"><use href="#i-plus"/></svg><input class="input" placeholder="إضافة مهمة فرعية…" style="border:none; background:transparent; padding:4px 0; font-size:13px;"></div>
+          </div>
+        </div>
+
+        <div class="field"><label>ملاحظات</label><textarea class="input" placeholder="أي تفاصيل إضافية…">راجعي ملاحظات المشرفة قبل التسليم.</textarea></div>
+        <div class="field"><label>الروابط</label>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px;"><span class="badge" style="background:var(--teal-tint); color:var(--teal-700);"><svg class="icon"><use href="#i-link"/></svg>drive.google.com/…<svg class="icon" style="width:9px;height:9px; margin-inline-start:2px;"><use href="#i-x"/></svg></span></div>
+          <div class="input-icon-wrap"><svg class="icon"><use href="#i-link"/></svg><input class="input" placeholder="أضيفي رابطًا…"></div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn btn-primary" style="flex:1;">إضافة المهمة</button>
+          <button class="btn btn-secondary" style="flex:1;">إلغاء</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 05 — EDIT TASK
+======================================================================= -->
+<section class="doc-section" id="s05">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٥</span>الشاشة ٠٥</div>
+    <h2 class="doc-title">تعديل مهمة</h2>
+    <p class="doc-desc">نفس نموذج الإضافة، مُعبّأ مسبقًا بجميع القيم القابلة للتعديل، مع رابط حذف واضح أسفل النافذة.</p>
+  </div></div>
+  <div class="frame" style="background:rgba(15,21,23,.45); padding:44px 24px; display:flex; justify-content:center;">
+    <div class="card pad-lg" style="width:100%; max-width:600px; background:var(--surface-raised);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;">
+        <h2 style="font-size:19px;">تعديل المهمة</h2>
+        <button class="btn btn-ghost btn-icon"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div class="field"><label>اسم المهمة</label><input class="input" value="مذاكرة الفصل الخامس — مادة الإحصاء"></div>
+        <div class="field"><label>النوع</label>
+          <div class="chip-select">
+            <span class="chip-opt is-active c-study"><span class="dot" style="background:#fff;"></span>دراسة</span>
+            <span class="chip-opt c-work"><span class="dot" style="background:var(--cat-work);"></span>عمل</span>
+            <span class="chip-opt c-project"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span>
+            <span class="chip-opt c-personal"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span>
+            <span class="chip-opt c-general"><span class="dot" style="background:var(--cat-general);"></span>عام</span>
+          </div>
+        </div>
+        <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+          <div class="field"><label>تاريخ المهمة</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-cal"/></svg><input class="input" value="23 أغسطس 2026"></div></div>
+          <div class="field"><label>وقت المهمة</label><div class="input-icon-wrap"><svg class="icon"><use href="#i-clock"/></svg><input class="input" value="05:00 م"></div></div>
+        </div>
+        <div class="field"><label>الأولوية</label>
+          <div class="chip-select">
+            <span class="chip-opt pr-high">عالية</span>
+            <span class="chip-opt is-active pr-med"><span class="dot" style="background:#fff;"></span>متوسطة</span>
+            <span class="chip-opt pr-low">منخفضة</span>
+          </div>
+        </div>
+        <div class="field"><label>ملاحظات</label><textarea class="input">التركيز على أسئلة الفصل الفردية.</textarea></div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn btn-primary" style="flex:1;">حفظ التغييرات</button>
+          <button class="btn btn-secondary" style="flex:1;">إلغاء</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="color:var(--crit-600); align-self:center;"><svg class="icon"><use href="#i-trash"/></svg>حذف هذه المهمة</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 06 — DELETE CONFIRM
+======================================================================= -->
+<section class="doc-section" id="s06">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٦</span>الشاشة ٠٦</div>
+    <h2 class="doc-title">تأكيد الحذف</h2>
+    <p class="doc-desc">نافذة صغيرة ومباشرة — بلا مبالغة في الإنذار، مع تمييز واضح لفعل الحذف النهائي.</p>
+  </div></div>
+  <div class="frame" style="background:rgba(15,21,23,.45); padding:60px 24px; display:flex; justify-content:center;">
+    <div class="card pad-lg" style="width:100%; max-width:380px; text-align:center; background:var(--surface-raised);">
+      <div style="width:52px;height:52px; border-radius:50%; background:var(--crit-tint); display:flex; align-items:center; justify-content:center; margin:0 auto 18px; color:var(--crit-600);"><svg class="icon" style="width:24px;height:24px;"><use href="#i-warn"/></svg></div>
+      <h2 style="font-size:17px;">هل أنتِ متأكدة من حذف هذه المهمة؟</h2>
+      <p style="font-size:13px; color:var(--ink-500); margin-top:10px; line-height:1.7;">"مراجعة عرض الاجتماع الأسبوعي" — لا يمكن التراجع عن هذا الإجراء.</p>
+      <div style="display:flex; gap:10px; margin-top:24px;">
+        <button class="btn btn-secondary" style="flex:1;">إلغاء</button>
+        <button class="btn btn-danger" style="flex:1;"><svg class="icon"><use href="#i-trash"/></svg>حذف</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 07 — CALENDAR
+======================================================================= -->
+<section class="doc-section" id="s07">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٧</span>الشاشة ٠٧</div>
+    <h2 class="doc-title">التقويم</h2>
+    <p class="doc-desc">عرض شهري وأسبوعي، مع تمييز اليوم الحالي، ونقر أي يوم لعرض مهامه في لوحة جانبية. تفاصيل هندسية خفيفة مستوحاة من نوافذ القطيف التراثية.</p>
+  </div></div>
+
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a class="active"><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+    <div class="app-main">
+      <div class="app-topbar">
+        <div><h1>التقويم</h1><div class="sub"><span>أغسطس ٢٠٢٦</span></div></div>
+        <div class="actions">
+          <div style="display:flex; background:var(--paper-alt); border-radius:10px; padding:3px;">
+            <button class="btn btn-sm" style="background:var(--surface); box-shadow:var(--shadow-card);">شهري</button>
+            <button class="btn btn-ghost btn-sm">أسبوعي</button>
+          </div>
+          <button class="btn btn-secondary btn-icon"><svg class="icon"><use href="#i-chev-r"/></svg></button>
+          <button class="btn btn-secondary btn-icon"><svg class="icon"><use href="#i-chev-l"/></svg></button>
+        </div>
+      </div>
+      <div class="grid-2" style="grid-template-columns:1.6fr 1fr; align-items:flex-start;">
+        <div class="card pad-lg lattice-bg">
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:8px;">
+            <span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">س</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">ح</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">ن</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">ث</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">ر</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">خ</span><span style="text-align:center; font-size:11px; font-weight:700; color:var(--ink-500);">ج</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+            <!-- 5 weeks x 7 -->
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line-soft); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:11px; color:var(--ink-300);">27</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line-soft); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:11px; color:var(--ink-300);">28</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line-soft); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:11px; color:var(--ink-300);">29</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line-soft); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:11px; color:var(--ink-300);">30</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line-soft); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:11px; color:var(--ink-300);">31</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; flex-direction:column; align-items:flex-end; padding:6px; font-size:12px; font-weight:600; gap:2px;">1<span style="display:flex; gap:2px; margin-top:auto;"><i style="width:5px;height:5px;border-radius:50%;background:var(--cat-work);"></i></span></div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">2</div>
+
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">3</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; flex-direction:column; align-items:flex-end; padding:6px; font-size:12px; font-weight:600; gap:2px;">4<span style="display:flex; gap:2px; margin-top:auto;"><i style="width:5px;height:5px;border-radius:50%;background:var(--cat-study);"></i><i style="width:5px;height:5px;border-radius:50%;background:var(--cat-personal);"></i></span></div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">5</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">6</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">7</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">8</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">9</div>
+
+            <!-- current-day highlight cell (23) placed within a representative row -->
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">17</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">18</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">19</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">20</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:flex-start; justify-content:flex-end; padding:6px; font-size:12px; font-weight:600;">21</div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--crit-tint); border:1px solid var(--crit-600); display:flex; flex-direction:column; align-items:flex-end; padding:6px; font-size:12px; font-weight:700; color:var(--crit-700); gap:2px;">22<span style="display:flex; gap:2px; margin-top:auto;"><i style="width:5px;height:5px;border-radius:50%;background:var(--cat-work);"></i></span></div>
+            <div style="aspect-ratio:1; border-radius:10px; background:var(--teal-700); border:1px solid var(--teal-700); display:flex; flex-direction:column; align-items:flex-end; padding:6px; font-size:12px; font-weight:700; color:#fff; gap:2px; box-shadow:var(--shadow-pop);">23<span style="display:flex; gap:2px; margin-top:auto;"><i style="width:5px;height:5px;border-radius:50%;background:#fff;"></i><i style="width:5px;height:5px;border-radius:50%;background:#fff;opacity:.6;"></i></span></div>
+          </div>
+        </div>
+        <div class="card pad-lg">
+          <p style="font-size:12px; font-weight:700; color:var(--teal-700); margin-bottom:4px;">الأحد، ٢٣ أغسطس</p>
+          <p style="font-size:11.5px; color:var(--ink-500); margin-bottom:14px;">مهمتان في هذا اليوم</p>
+          <div class="task-row"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title">تسليم الفصل الثالث من مشروع التخرج</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span><span class="badge badge-high">عالية</span></div></div></div>
+          <div class="task-row"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title">مذاكرة الفصل الخامس</p><div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span><span class="badge badge-med">متوسطة</span></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 08 — STATISTICS
+======================================================================= -->
+<section class="doc-section" id="s08">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٨</span>الشاشة ٠٨</div>
+    <h2 class="doc-title">إحصائياتي</h2>
+    <p class="doc-desc">إنجاز يومي/أسبوعي/شهري، مقارنة بالفترة السابقة، وتوزيع المهام حسب النوع — رسوم بسيطة وأنيقة بألوان متحقّق من تباينها.</p>
+  </div></div>
+
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a class="active"><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+    <div class="app-main">
+      <div class="app-topbar"><div><h1>إحصائياتي</h1><div class="sub"><span>نظرة عامة على أدائك</span></div></div></div>
+
+      <div class="grid-2" style="grid-template-columns:1fr 1fr; margin-bottom:18px;">
+        <div class="card pad-lg">
+          <div class="section-title"><h2>هذا الأسبوع مقابل الماضي</h2></div>
+          <div style="display:flex; align-items:baseline; gap:10px;"><span style="font-size:30px; font-weight:700;">٪64</span><span style="display:flex; align-items:center; gap:3px; font-size:12.5px; font-weight:700; color:var(--success-600);"><svg class="icon" style="width:13px;height:13px;"><use href="#i-up"/></svg>+٪8</span></div>
+          <p style="font-size:12px; color:var(--ink-500); margin-top:4px;">مقارنة بـ ٪56 الأسبوع الماضي</p>
+          <div style="display:flex; align-items:flex-end; gap:6px; height:70px; margin-top:18px;">
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:38%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:52%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:44%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:60%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:56%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:66%;"></div>
+            <div style="flex:1; background:var(--teal-600); border-radius:4px 4px 0 0; height:64%; position:relative;"><span style="position:absolute; top:-20px; inset-inline-start:50%; transform:translateX(50%); font-size:10.5px; font-weight:700; color:var(--teal-700);">٪64</span></div>
+          </div>
+        </div>
+        <div class="card pad-lg">
+          <div class="section-title"><h2>هذا الشهر مقابل الماضي</h2></div>
+          <div style="display:flex; align-items:baseline; gap:10px;"><span style="font-size:30px; font-weight:700;">٪69</span><span style="display:flex; align-items:center; gap:3px; font-size:12.5px; font-weight:700; color:var(--crit-600);"><svg class="icon" style="width:13px;height:13px;"><use href="#i-down"/></svg>-٪3</span></div>
+          <p style="font-size:12px; color:var(--ink-500); margin-top:4px;">مقارنة بـ ٪72 الشهر الماضي</p>
+          <div style="display:flex; align-items:flex-end; gap:8px; height:70px; margin-top:18px;">
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:58%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:70%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:50%;"></div>
+            <div style="flex:1; background:var(--line-soft); border-radius:4px 4px 0 0; height:72%;"></div>
+            <div style="flex:1; background:var(--sand-600); border-radius:4px 4px 0 0; height:69%; position:relative;"><span style="position:absolute; top:-20px; inset-inline-start:50%; transform:translateX(50%); font-size:10.5px; font-weight:700; color:var(--sand-700);">٪69</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="grid-template-columns:1.3fr 1fr;">
+        <div class="card pad-lg">
+          <div class="section-title"><h2>الإنجاز اليومي — آخر ٧ أيام</h2></div>
+          <div style="display:flex; align-items:flex-end; gap:10px; height:100px;">
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:40px;"></div><span style="font-size:10px; color:var(--ink-500);">س</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:64px;"></div><span style="font-size:10px; color:var(--ink-500);">ح</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:30px;"></div><span style="font-size:10px; color:var(--ink-500);">ن</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:76px;"></div><span style="font-size:10px; color:var(--ink-500);">ث</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:52px;"></div><span style="font-size:10px; color:var(--ink-500);">ر</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--line-soft); border-radius:4px 4px 0 0; height:58px;"></div><span style="font-size:10px; color:var(--ink-500);">خ</span></div>
+            <div style="flex:1; text-align:center;"><div style="background:var(--teal-600); border-radius:4px 4px 0 0; height:60px;"></div><span style="font-size:10px; color:var(--teal-700); font-weight:700;">ج</span></div>
+          </div>
+        </div>
+        <div class="card pad-lg">
+          <div class="section-title"><h2>توزيع المهام حسب النوع</h2></div>
+          <div style="display:flex; flex-direction:column; gap:11px;">
+            <div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span><span style="font-weight:700;">32٪</span></div><div class="progress-track"><div class="progress-fill" style="width:32%; background:var(--cat-study);"></div></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span><span style="font-weight:700;">26٪</span></div><div class="progress-track"><div class="progress-fill" style="width:26%; background:var(--cat-work);"></div></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span class="tag-type"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span><span style="font-weight:700;">18٪</span></div><div class="progress-track"><div class="progress-fill" style="width:18%; background:var(--cat-project);"></div></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span class="tag-type"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span><span style="font-weight:700;">14٪</span></div><div class="progress-track"><div class="progress-fill" style="width:14%; background:var(--cat-personal);"></div></div></div>
+            <div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span class="tag-type"><span class="dot" style="background:var(--cat-general);"></span>عام</span><span style="font-weight:700;">10٪</span></div><div class="progress-track"><div class="progress-fill" style="width:10%; background:var(--cat-general);"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 09 — NOTES
+======================================================================= -->
+<section class="doc-section" id="s09">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">٩</span>الشاشة ٠٩</div>
+    <h2 class="doc-title">ملاحظاتي</h2>
+    <p class="doc-desc">مساحة للأفكار لا للمهام — بلا تصنيفات، بلا بحث، بأقل تعقيد ممكن.</p>
+  </div></div>
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a class="active"><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+    <div class="app-main">
+      <div class="app-topbar"><div><h1>ملاحظاتي</h1><div class="sub"><span>7 ملاحظات</span></div></div><div class="actions"><button class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg>ملاحظة جديدة</button></div></div>
+      <div class="grid-3">
+        <div class="card pad-lg">
+          <h3 style="font-size:15px;">فكرة لمشروع التخرج</h3>
+          <p style="font-size:13px; color:var(--ink-700); margin-top:10px; line-height:1.8;">ممكن أربط الفصل الثالث بموضوع تحليل البيانات بدل الاستبيان — أسأل المشرفة الأسبوع الجاي.</p>
+          <div style="display:flex; gap:8px; margin-top:16px; padding-top:12px; border-top:1px solid var(--line-soft);"><button class="btn btn-ghost btn-icon btn-sm"><svg class="icon"><use href="#i-pencil"/></svg></button><button class="btn btn-ghost btn-icon btn-sm" style="color:var(--crit-600);"><svg class="icon"><use href="#i-trash"/></svg></button></div>
+        </div>
+        <div class="card pad-lg">
+          <h3 style="font-size:15px;">قائمة قراءة الصيف</h3>
+          <p style="font-size:13px; color:var(--ink-700); margin-top:10px; line-height:1.8;">كتابان عن الإنتاجية، ورواية جديدة صدرت الشهر الماضي.</p>
+          <div style="display:flex; gap:8px; margin-top:16px; padding-top:12px; border-top:1px solid var(--line-soft);"><button class="btn btn-ghost btn-icon btn-sm"><svg class="icon"><use href="#i-pencil"/></svg></button><button class="btn btn-ghost btn-icon btn-sm" style="color:var(--crit-600);"><svg class="icon"><use href="#i-trash"/></svg></button></div>
+        </div>
+        <div class="card pad-lg">
+          <h3 style="font-size:15px;">تذكير لطيف</h3>
+          <p style="font-size:13px; color:var(--ink-700); margin-top:10px; line-height:1.8;">الأسبوع الصعب مؤقت. أثرك الحقيقي في الاستمرار، لا في الكمال.</p>
+          <div style="display:flex; gap:8px; margin-top:16px; padding-top:12px; border-top:1px solid var(--line-soft);"><button class="btn btn-ghost btn-icon btn-sm"><svg class="icon"><use href="#i-pencil"/></svg></button><button class="btn btn-ghost btn-icon btn-sm" style="color:var(--crit-600);"><svg class="icon"><use href="#i-trash"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 10 — SETTINGS
+======================================================================= -->
+<section class="doc-section" id="s10">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٠</span>الشاشة ١٠</div>
+    <h2 class="doc-title">الإعدادات</h2>
+    <p class="doc-desc">الحساب، التنبيهات مع خيارات وقت الملخص وتذكير الموعد النهائي، والمظهر.</p>
+  </div></div>
+  <div class="frame app-shell">
+    <div class="app-sidebar">
+      <div class="app-brand"><svg><use href="#i-athar"/></svg><b>أَثَر</b></div>
+      <nav class="app-nav">
+        <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+        <a><svg class="icon"><use href="#i-list"/></svg>كل المهام</a>
+        <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+        <a><svg class="icon"><use href="#i-chart"/></svg>إحصائياتي</a>
+        <a><svg class="icon"><use href="#i-note"/></svg>ملاحظاتي</a>
+        <a class="active"><svg class="icon"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+      <div class="app-sidebar-foot"><div class="avatar">ر</div><div><div class="who">رزان</div><div class="role">مساحتي الخاصة</div></div></div>
+    </div>
+    <div class="app-main">
+      <div class="app-topbar"><div><h1>الإعدادات</h1></div></div>
+      <div style="display:flex; flex-direction:column; gap:18px; max-width:640px;">
+        <div class="card pad-lg">
+          <h2 style="font-size:15px; margin-bottom:16px;">الحساب</h2>
+          <div class="field" style="margin-bottom:16px;"><label>البريد الإلكتروني</label><input class="input" value="razan@example.com" dir="ltr" style="text-align:right;"></div>
+          <button class="btn btn-secondary btn-sm"><svg class="icon"><use href="#i-lock"/></svg>تغيير كلمة المرور</button>
+        </div>
+        <div class="card pad-lg">
+          <h2 style="font-size:15px; margin-bottom:16px;">التنبيهات</h2>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><p style="font-size:13.5px; font-weight:600;">الملخص اليومي</p><p style="font-size:11.5px; color:var(--ink-500); margin-top:2px;">إشعار صباحي بمهامك</p></div>
+              <div style="width:42px;height:24px;border-radius:100px; background:var(--teal-700); position:relative; flex-shrink:0;"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute; top:3px; inset-inline-start:3px;"></div></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <p style="font-size:13px; color:var(--ink-700);">وقت الملخص اليومي</p>
+              <select class="select" style="width:130px;"><option>08:00 ص</option></select>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><p style="font-size:13.5px; font-weight:600;">تنبيهات المواعيد النهائية</p></div>
+              <div style="width:42px;height:24px;border-radius:100px; background:var(--teal-700); position:relative; flex-shrink:0;"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute; top:3px; inset-inline-start:3px;"></div></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <p style="font-size:13px; color:var(--ink-700);">التذكير قبل الموعد بـ</p>
+              <select class="select" style="width:150px;"><option>قبل ساعة</option><option>قبل 12 ساعة</option><option>قبل يوم</option><option>بدون تذكير</option></select>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><p style="font-size:13.5px; font-weight:600;">الملخص الأسبوعي</p></div>
+              <div style="width:42px;height:24px;border-radius:100px; background:var(--line-strong); position:relative; flex-shrink:0;"><div style="width:18px;height:18px;border-radius:50%;background:var(--surface);position:absolute; top:3px; inset-inline-end:3px;"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card pad-lg">
+          <h2 style="font-size:15px; margin-bottom:16px;">المظهر</h2>
+          <div style="display:flex; gap:10px;">
+            <button class="btn" style="flex:1; background:var(--teal-tint); color:var(--teal-700); border:1.5px solid var(--teal-700);"><svg class="icon"><use href="#i-sun"/></svg>الوضع الفاتح</button>
+            <button class="btn btn-secondary" style="flex:1;"><svg class="icon"><use href="#i-moon"/></svg>الوضع الداكن</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 11 — PASSWORD RESET FLOW
+======================================================================= -->
+<section class="doc-section" id="s11">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١١</span>الشاشة ١١</div>
+    <h2 class="doc-title">استعادة كلمة المرور</h2>
+    <p class="doc-desc">ثلاث خطوات متسلسلة: طلب الاستعادة، تأكيد إرسال البريد، ثم نجاح التحديث.</p>
+  </div></div>
+  <div class="grid-3">
+    <div class="frame">
+      <div class="frame-cap"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">١ · نسيت كلمة المرور</span></div>
+      <div class="pad-lg" style="padding:44px 30px; text-align:center; background:var(--paper); min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 48 48" style="width:34px;height:34px; color:var(--teal-700); margin-bottom:16px;"><use href="#i-athar"/></svg>
+        <h2 style="font-size:18px;">نسيت كلمة المرور؟</h2>
+        <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.7;">أدخلي بريدك الإلكتروني وسنرسل لكِ رابط استعادة.</p>
+        <div class="field" style="width:100%; margin-top:22px; text-align:right;"><label>البريد الإلكتروني</label><input class="input" placeholder="you@example.com" dir="ltr" style="text-align:right;"></div>
+        <button class="btn btn-primary" style="width:100%; margin-top:14px;">إرسال رابط الاستعادة</button>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="frame-cap"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">٢ · تأكيد البريد</span></div>
+      <div class="pad-lg" style="padding:44px 30px; text-align:center; background:var(--paper); min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--teal-tint); display:flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--teal-700);"><svg class="icon" style="width:26px;height:26px;"><use href="#i-mail"/></svg></div>
+        <h2 style="font-size:18px;">تحقّقي من بريدك</h2>
+        <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">أرسلنا رابط استعادة كلمة المرور إلى<br><b style="color:var(--ink-900);" dir="ltr">razan@example.com</b></p>
+        <button class="btn btn-secondary" style="width:100%; margin-top:22px;">إعادة إرسال الرابط</button>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="frame-cap"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">٣ · تم بنجاح</span></div>
+      <div class="pad-lg" style="padding:44px 30px; text-align:center; background:var(--paper); min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--success-tint); display:flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--success-600);"><svg class="icon" style="width:26px;height:26px;"><use href="#i-check"/></svg></div>
+        <h2 style="font-size:18px;">تم تحديث كلمة المرور</h2>
+        <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.</p>
+        <button class="btn btn-primary" style="width:100%; margin-top:22px;">تسجيل الدخول</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 12 — EMPTY STATES
+======================================================================= -->
+<section class="doc-section" id="s12">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٢</span>الشاشة ١٢</div>
+    <h2 class="doc-title">الحالات الفارغة</h2>
+    <p class="doc-desc">رسائل هادئة ومحفّزة بدلًا من الفراغ البارد.</p>
+  </div></div>
+  <div class="grid-3" style="grid-template-columns:repeat(3,1fr);">
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px;">
+      <svg viewBox="0 0 48 48" style="width:40px;height:40px; color:var(--line-strong); margin:0 auto 16px;"><use href="#i-athar"/></svg>
+      <p style="font-size:14px; font-weight:600;">لا توجد مهام اليوم ✨</p>
+      <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">يمكن هذا وقت مناسب لشيء يترك أثرًا.</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px;">
+      <svg class="icon" style="width:38px;height:38px; color:var(--line-strong); margin:0 auto 16px;"><use href="#i-cal-days"/></svg>
+      <p style="font-size:14px; font-weight:600;">أسبوع هادئ حتى الآن</p>
+      <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">أضيفي ما يستحق وقتك ومساحتك.</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px;">
+      <svg class="icon" style="width:38px;height:38px; color:var(--line-strong); margin:0 auto 16px;"><use href="#i-clock"/></svg>
+      <p style="font-size:14px; font-weight:600;">لا مواعيد قريبة تنتظرك</p>
+      <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">مساحة صافية للتركيز على ما تريدين.</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px;">
+      <svg class="icon" style="width:38px;height:38px; color:var(--line-strong); margin:0 auto 16px;"><use href="#i-note"/></svg>
+      <p style="font-size:14px; font-weight:600;">لم تكتبي شيئًا بعد</p>
+      <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">أفكارك تستحق أن تُحفظ في مكان واحد.</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px;">
+      <svg class="icon" style="width:38px;height:38px; color:var(--line-strong); margin:0 auto 16px;"><use href="#i-trophy"/></svg>
+      <p style="font-size:14px; font-weight:600;">لم تكتمل مهام هنا بعد</p>
+      <p style="font-size:12.5px; color:var(--ink-500); margin-top:8px; line-height:1.8;">أول خطوة اليوم تصنع أثرًا غدًا.</p>
+    </div>
+    <div class="card pad-lg" style="text-align:center; padding:44px 24px; background:var(--paper-alt);">
+      <p style="font-size:12px; color:var(--ink-500); line-height:1.8;">جميع الحالات الفارغة تستخدم نفس اللغة البصرية: أيقونة خطية خافتة، جملة مختصرة، وجملة تحفيزية ثانية — بلا رسوم توضيحية مبالغ فيها.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 13 — OVERDUE STATE
+======================================================================= -->
+<section class="doc-section" id="s13">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٣</span>الشاشة ١٣</div>
+    <h2 class="doc-title">حالة المهام المتأخرة</h2>
+    <p class="doc-desc">إشارة حمراء واضحة لكنها محدودة النطاق — لا تسيطر على الواجهة، وتُرتَّب المهمة تلقائيًا في أعلى القائمة.</p>
+  </div></div>
+  <div class="card pad-lg">
+    <div class="task-row is-overdue" style="position:relative;">
+      <div class="checkbox checkbox-round"></div>
+      <div class="task-main">
+        <p class="task-title">مراجعة عرض الاجتماع الأسبوعي</p>
+        <div class="task-meta">
+          <span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span>
+          <span class="badge badge-overdue"><svg class="icon"><use href="#i-warn"/></svg>متأخرة منذ يوم واحد</span>
+          <span class="meta-item"><svg class="icon"><use href="#i-clock"/></svg>كان الموعد أمس، ٥:٠٠ م</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3" style="grid-template-columns:repeat(3,1fr); margin-top:16px;">
+    <div class="card pad-md" style="display:flex; gap:10px; align-items:flex-start;"><div style="width:26px;height:26px;border-radius:8px;background:var(--crit-tint);display:flex;align-items:center;justify-content:center;color:var(--crit-600);flex-shrink:0;"><svg class="icon" style="width:14px;height:14px;"><use href="#i-warn"/></svg></div><p style="font-size:12.5px; color:var(--ink-700);">حدّ داخلي أحمر رفيع (3px) بدل تلوين الصف كاملًا</p></div>
+    <div class="card pad-md" style="display:flex; gap:10px; align-items:flex-start;"><div style="width:26px;height:26px;border-radius:8px;background:var(--crit-tint);display:flex;align-items:center;justify-content:center;color:var(--crit-600);flex-shrink:0;"><svg class="icon" style="width:14px;height:14px;"><use href="#i-clock"/></svg></div><p style="font-size:12.5px; color:var(--ink-700);">شارة نصية "متأخرة" مع مدة التأخر — واضحة وصادقة</p></div>
+    <div class="card pad-md" style="display:flex; gap:10px; align-items:flex-start;"><div style="width:26px;height:26px;border-radius:8px;background:var(--crit-tint);display:flex;align-items:center;justify-content:center;color:var(--crit-600);flex-shrink:0;"><svg class="icon" style="width:14px;height:14px;"><use href="#i-up"/></svg></div><p style="font-size:12.5px; color:var(--ink-700);">تُرفَع تلقائيًا لأعلى القائمة، فوق الأولوية العالية</p></div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     SCREEN 14 — COMPLETED TASK STATE (interactive demo)
+======================================================================= -->
+<section class="doc-section" id="s14">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٤</span>الشاشة ١٤</div>
+    <h2 class="doc-title">إنجاز مهمة</h2>
+    <p class="doc-desc">جرّبي النقر على الدائرة: تتحول المهمة لمنجزة بحركة انتقالية هادئة، وترتفع نسبة الإنجاز، ثم تختفي المهمة من القائمة النشطة.</p>
+  </div></div>
+  <div class="card pad-lg" style="max-width:640px;">
+    <div class="stat-card" style="margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--line-soft);">
+      <div><p class="lbl">إنجاز اليوم</p><p class="val"><b id="demoDoneNum">3</b> / 5 مهام</p></div>
+      <div class="ring" id="demoRing" style="--pct:60; --ring-c:var(--teal-600);"><b id="demoRingLabel">٪60</b></div>
+    </div>
+    <div id="demoTaskRow" class="task-row" style="cursor:pointer;">
+      <div class="checkbox checkbox-round" id="demoCheckbox"><svg class="icon"><use href="#i-check"/></svg></div>
+      <div class="task-main">
+        <p class="task-title" id="demoTaskTitle">تحضير قائمة مراجع الفصل الرابع</p>
+        <div class="task-meta"><span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span><span class="badge badge-med">متوسطة</span></div>
+      </div>
+    </div>
+    <p id="demoHint" style="font-size:11.5px; color:var(--ink-500); margin-top:10px;">← انقري على الدائرة لتجربة التأثير</p>
+  </div>
+</section>
+
+<!-- =======================================================================
+     RESPONSIVE
+======================================================================= -->
+<section class="doc-section" id="responsive">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٥</span>نظام الاستجابة</div>
+    <h2 class="doc-title">التصميم المتجاوب</h2>
+    <p class="doc-desc">القائمة الجانبية في سطح المكتب تتحول إلى شريط تنقّل سفلي في الجوال (الرئيسية، المهام، التقويم، الإحصائيات، المزيد)، ونافذة الإضافة تتحول إلى ورقة سفلية بملء الشاشة. الأجهزة اللوحية تحافظ على القائمة الجانبية مصغّرة إلى أيقونات.</p>
+  </div></div>
+
+  <div style="display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;">
+    <!-- mobile dashboard -->
+    <div style="width:340px;">
+      <div class="frame" style="border-radius:32px;">
+        <div style="display:flex; flex-direction:column; min-height:640px; background:var(--paper);">
+          <div style="padding:20px 18px 14px; display:flex; justify-content:space-between; align-items:center;">
+            <div><h1 style="font-size:18px;">مساء الخير ✨</h1><p style="font-size:11px; color:var(--ink-500); margin-top:3px;">الأحد، ٢٣ أغسطس · ٦:٤٠ م</p></div>
+            <div class="avatar" style="width:32px;height:32px; font-size:12px;">ر</div>
+          </div>
+          <div style="padding:0 18px;">
+            <div class="card pad-md" style="background:var(--teal-900); color:#F1E9D8;">
+              <p style="font-size:10.5px; font-weight:700; color:#E0B978;">مهمتك الأهم اليوم</p>
+              <p style="font-size:14px; font-weight:600; margin-top:6px;">تسليم الفصل الثالث</p>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;"><span style="font-size:18px; font-weight:700; color:#E0B978;">٣س ٢٠د</span><button class="btn btn-sm" style="background:#E0B978; color:#0A2E2B;">إنجاز</button></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; padding:16px 18px 0;">
+            <div class="card pad-md" style="flex:1; text-align:center;"><p style="font-size:10px; color:var(--ink-500);">اليوم</p><p style="font-size:16px; font-weight:700; margin-top:3px;">٪60</p></div>
+            <div class="card pad-md" style="flex:1; text-align:center;"><p style="font-size:10px; color:var(--ink-500);">الأسبوع</p><p style="font-size:16px; font-weight:700; margin-top:3px;">٪64</p></div>
+            <div class="card pad-md" style="flex:1; text-align:center;"><p style="font-size:10px; color:var(--ink-500);">الشهر</p><p style="font-size:16px; font-weight:700; margin-top:3px;">٪69</p></div>
+          </div>
+          <div style="padding:16px 18px; flex:1;">
+            <p style="font-size:12px; font-weight:700; color:var(--teal-700); margin-bottom:8px;">اليوم</p>
+            <div class="card pad-md" style="margin-bottom:8px;"><div class="task-row" style="padding:0; border:none;"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title" style="font-size:13px;">مذاكرة الفصل الخامس</p><div class="task-meta"><span class="badge badge-med">متوسطة</span></div></div></div></div>
+          </div>
+          <div class="mnav">
+            <a class="active"><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+            <a><svg class="icon"><use href="#i-list"/></svg>المهام</a>
+            <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+            <a><svg class="icon"><use href="#i-chart"/></svg>الإحصائيات</a>
+            <a><svg class="icon"><use href="#i-more"/></svg>المزيد</a>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label"><span>الجوال — الرئيسية</span><span class="bp">375px</span></div>
+    </div>
+
+    <!-- mobile all tasks -->
+    <div style="width:340px;">
+      <div class="frame" style="border-radius:32px;">
+        <div style="display:flex; flex-direction:column; min-height:640px; background:var(--paper);">
+          <div style="padding:20px 18px 14px;"><h1 style="font-size:18px;">كل المهام</h1>
+            <div class="input-icon-wrap" style="margin-top:12px;"><svg class="icon"><use href="#i-search"/></svg><input class="input" placeholder="ابحثي…"></div>
+          </div>
+          <div style="padding:6px 18px; flex:1;">
+            <div class="card pad-md" style="margin-bottom:8px; border-inline-start:3px solid var(--crit-600);"><div class="task-row" style="padding:0; border:none;"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title" style="font-size:13px;">مراجعة عرض الاجتماع</p><div class="task-meta"><span class="badge badge-overdue">متأخرة</span></div></div></div></div>
+            <div class="card pad-md" style="margin-bottom:8px;"><div class="task-row" style="padding:0; border:none;"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title" style="font-size:13px;">تسليم الفصل الثالث</p><div class="task-meta"><span class="badge badge-high">عالية</span></div></div></div></div>
+            <div class="card pad-md"><div class="task-row" style="padding:0; border:none;"><div class="checkbox checkbox-round"></div><div class="task-main"><p class="task-title" style="font-size:13px;">مذاكرة الفصل الخامس</p><div class="task-meta"><span class="badge badge-med">متوسطة</span></div></div></div></div>
+          </div>
+          <button class="btn btn-primary btn-icon" style="position:absolute; bottom:80px; inset-inline-end:26px; border-radius:50%; width:50px;height:50px; box-shadow:var(--shadow-pop);"><svg class="icon" style="width:20px;height:20px;"><use href="#i-plus"/></svg></button>
+          <div class="mnav">
+            <a><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a>
+            <a class="active"><svg class="icon"><use href="#i-list"/></svg>المهام</a>
+            <a><svg class="icon"><use href="#i-cal"/></svg>التقويم</a>
+            <a><svg class="icon"><use href="#i-chart"/></svg>الإحصائيات</a>
+            <a><svg class="icon"><use href="#i-more"/></svg>المزيد</a>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label"><span>الجوال — كل المهام</span><span class="bp">375px</span></div>
+    </div>
+
+    <!-- mobile add task sheet -->
+    <div style="width:340px;">
+      <div class="frame" style="border-radius:32px;">
+        <div style="display:flex; flex-direction:column; justify-content:flex-end; min-height:640px; background:rgba(15,21,23,.5);">
+          <div style="background:var(--surface-raised); border-radius:24px 24px 0 0; padding:18px; max-height:560px; overflow:hidden;">
+            <div style="width:36px;height:4px;border-radius:100px;background:var(--line-strong); margin:0 auto 16px;"></div>
+            <h2 style="font-size:16px; margin-bottom:14px;">إضافة مهمة</h2>
+            <div class="field" style="margin-bottom:12px;"><label>اسم المهمة</label><input class="input"></div>
+            <div class="field" style="margin-bottom:12px;"><label>النوع</label>
+              <div class="chip-select"><span class="chip-opt is-active c-study">دراسة</span><span class="chip-opt c-work">عمل</span><span class="chip-opt c-project">مشروع</span></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;">إضافة المهمة</button>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label"><span>الجوال — إضافة مهمة (ورقة سفلية)</span><span class="bp">375px</span></div>
+    </div>
+
+    <!-- tablet dashboard -->
+    <div style="width:560px;">
+      <div class="frame">
+        <div style="display:flex; min-height:640px; background:var(--paper);">
+          <div style="width:64px; flex-shrink:0; background:var(--surface-raised); border-inline-start:1px solid var(--line); display:flex; flex-direction:column; align-items:center; padding:18px 0; gap:22px;">
+            <svg viewBox="0 0 48 48" style="width:26px;height:26px; color:var(--teal-700);"><use href="#i-athar"/></svg>
+            <a style="color:var(--teal-700); background:var(--teal-tint); width:38px;height:38px;border-radius:11px; display:flex; align-items:center; justify-content:center;"><svg class="icon"><use href="#i-home"/></svg></a>
+            <a style="color:var(--ink-500); width:38px;height:38px;border-radius:11px; display:flex; align-items:center; justify-content:center;"><svg class="icon"><use href="#i-list"/></svg></a>
+            <a style="color:var(--ink-500); width:38px;height:38px;border-radius:11px; display:flex; align-items:center; justify-content:center;"><svg class="icon"><use href="#i-cal"/></svg></a>
+            <a style="color:var(--ink-500); width:38px;height:38px;border-radius:11px; display:flex; align-items:center; justify-content:center;"><svg class="icon"><use href="#i-chart"/></svg></a>
+            <a style="color:var(--ink-500); width:38px;height:38px;border-radius:11px; display:flex; align-items:center; justify-content:center; margin-top:auto;"><svg class="icon"><use href="#i-gear"/></svg></a>
+          </div>
+          <div style="flex:1; padding:22px;">
+            <h1 style="font-size:19px;">صباح الخير ✨</h1>
+            <p style="font-size:11px; color:var(--ink-500); margin-top:4px;">الأحد، ٢٣ أغسطس · ٩:١٤ ص</p>
+            <div class="card pad-md" style="margin-top:16px; background:var(--teal-900); color:#F1E9D8;">
+              <p style="font-size:10.5px; font-weight:700; color:#E0B978;">مهمتك الأهم اليوم</p>
+              <p style="font-size:15px; font-weight:600; margin-top:6px;">تسليم الفصل الثالث من مشروع التخرج</p>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px;">
+              <div class="card pad-md" style="text-align:center;"><p style="font-size:10px;color:var(--ink-500);">اليوم</p><p style="font-size:16px;font-weight:700;">٪60</p></div>
+              <div class="card pad-md" style="text-align:center;"><p style="font-size:10px;color:var(--ink-500);">الأسبوع</p><p style="font-size:16px;font-weight:700;">٪64</p></div>
+              <div class="card pad-md" style="text-align:center;"><p style="font-size:10px;color:var(--ink-500);">الشهر</p><p style="font-size:16px;font-weight:700;">٪69</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label"><span>الجهاز اللوحي — الرئيسية (قائمة مصغّرة)</span><span class="bp">768px</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     COMPONENT LIBRARY
+======================================================================= -->
+<section class="doc-section" id="components" style="border-bottom:none;">
+  <div class="doc-head"><div>
+    <div class="doc-eyebrow"><span class="num">١٦</span>مكتبة المكوّنات</div>
+    <h2 class="doc-title">المكوّنات القابلة لإعادة الاستخدام</h2>
+    <p class="doc-desc">كل شاشة أعلاه مبنية من هذه القطع نفسها — الألوان والمسافات والزوايا موحّدة في كل مكان.</p>
+  </div></div>
+
+  <div style="display:flex; flex-direction:column; gap:26px;">
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">الأزرار</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-primary">أساسي</button>
+        <button class="btn btn-secondary">ثانوي</button>
+        <button class="btn btn-ghost">شفاف</button>
+        <button class="btn btn-danger">خطر</button>
+        <button class="btn btn-primary" disabled>معطّل</button>
+        <button class="btn btn-primary btn-sm">صغير</button>
+        <button class="btn btn-secondary btn-icon"><svg class="icon"><use href="#i-pencil"/></svg></button>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">الحقول والقوائم المنسدلة</p>
+      <div class="grid-3">
+        <div class="field"><label>حقل عادي</label><input class="input" placeholder="اكتبي هنا…"></div>
+        <div class="field"><label>حقل به خطأ</label><input class="input input-err" value="بريد غير صحيح"><span class="error"><svg class="icon" style="width:12px;height:12px;"><use href="#i-warn"/></svg>يرجى إدخال بريد صحيح</span></div>
+        <div class="field"><label>قائمة منسدلة</label><select class="select"><option>دراسة</option><option>عمل</option></select></div>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">صناديق الاختيار والشارات</p>
+      <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+        <div style="display:flex; gap:14px; align-items:center;"><div class="checkbox"></div><div class="checkbox is-checked"><svg class="icon"><use href="#i-check"/></svg></div><div class="checkbox checkbox-round is-checked"><svg class="icon"><use href="#i-check"/></svg></div></div>
+        <span class="badge badge-high">عالية</span><span class="badge badge-med">متوسطة</span><span class="badge badge-low">منخفضة</span><span class="badge badge-overdue"><svg class="icon"><use href="#i-warn"/></svg>متأخرة</span>
+        <span class="tag-type"><span class="dot" style="background:var(--cat-study);"></span>دراسة</span>
+        <span class="tag-type"><span class="dot" style="background:var(--cat-work);"></span>عمل</span>
+        <span class="tag-type"><span class="dot" style="background:var(--cat-project);"></span>مشروع</span>
+        <span class="tag-type"><span class="dot" style="background:var(--cat-personal);"></span>شخصي</span>
+        <span class="tag-type"><span class="dot" style="background:var(--cat-general);"></span>عام</span>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">مؤشرات التقدّم وبطاقات الإحصاء</p>
+      <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+        <div style="width:200px;"><div class="progress-track"><div class="progress-fill" style="width:64%;"></div></div></div>
+        <div class="ring" style="--pct:64;"><b>٪64</b></div>
+        <div class="ring ring-sm" style="--pct:30; --ring-c:var(--crit-600);"><b>٪30</b></div>
+        <div class="card pad-md stat-card" style="width:220px;"><div><p class="lbl">إنجاز اليوم</p><p class="val"><b>3</b>/5</p></div><div class="ring ring-sm" style="--pct:60;"><b>٪60</b></div></div>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">خلايا التقويم</p>
+      <div style="display:flex; gap:10px;">
+        <div style="width:52px;aspect-ratio:1;border-radius:10px;background:var(--surface);border:1px solid var(--line-soft);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px;font-size:11px;color:var(--ink-500);">12</div>
+        <div style="width:52px;aspect-ratio:1;border-radius:10px;background:var(--teal-700);color:#fff;display:flex;align-items:flex-start;justify-content:flex-end;padding:5px;font-size:11px;font-weight:700;">23</div>
+        <div style="width:52px;aspect-ratio:1;border-radius:10px;background:var(--crit-tint);border:1px solid var(--crit-600);color:var(--crit-700);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px;font-size:11px;font-weight:700;">22</div>
+        <div style="width:52px;aspect-ratio:1;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px;font-size:11px;font-weight:600;">18</div>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">الإشعارات المنبثقة (Toast)</p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <div class="toast toast-success"><svg class="icon"><use href="#i-check"/></svg>تم إنجاز المهمة بنجاح</div>
+        <div class="toast toast-error"><svg class="icon"><use href="#i-warn"/></svg>تعذّر حفظ المهمة، حاولي مجددًا</div>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">حالة التحميل والخطأ</p>
+      <div class="grid-2">
+        <div><div class="skeleton" style="height:16px; width:70%; margin-bottom:10px;"></div><div class="skeleton" style="height:16px; width:90%; margin-bottom:10px;"></div><div class="skeleton" style="height:16px; width:50%;"></div></div>
+        <div class="card pad-md" style="text-align:center; background:var(--crit-tint); border-color:transparent;"><svg class="icon" style="width:22px;height:22px; color:var(--crit-600); margin:0 auto 8px;"><use href="#i-warn"/></svg><p style="font-size:12.5px; font-weight:600; color:var(--crit-700);">حدث خطأ في تحميل المهام</p><button class="btn btn-sm btn-secondary" style="margin-top:10px;">إعادة المحاولة</button></div>
+      </div>
+    </div>
+
+    <div class="card pad-lg">
+      <p style="font-size:12px; font-weight:700; color:var(--ink-500); margin-bottom:14px;">عنصر القائمة الجانبية وشريط الجوال</p>
+      <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+        <a class="app-nav" style="display:inline-flex;"><span class="active" style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:var(--teal-tint);color:var(--teal-700);font-size:13px;font-weight:600;"><svg class="icon"><use href="#i-home"/></svg>نشط</span></a>
+        <span style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;color:var(--ink-700);font-size:13px;font-weight:600;"><svg class="icon"><use href="#i-list"/></svg>غير نشط</span>
+        <span class="mnav" style="border:1px solid var(--line); border-radius:14px; width:220px;"><a class="active"><svg class="icon"><use href="#i-home"/></svg>الرئيسية</a><a><svg class="icon"><use href="#i-list"/></svg>المهام</a></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer style="text-align:center; padding:44px 20px 64px; color:var(--ink-500); font-size:12px;">
+  <svg viewBox="0 0 48 48" style="width:22px;height:22px; color:var(--teal-700); margin:0 auto 10px;"><use href="#i-athar"/></svg>
+  أَثَر — هذا مكاني، هذا أثري.
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var btnLight = document.getElementById('btnLight');
+  var btnDark = document.getElementById('btnDark');
+
+  function apply(mode){
+    if(mode === 'dark'){ root.setAttribute('data-theme','dark'); btnDark.classList.add('active'); btnLight.classList.remove('active'); }
+    else { root.setAttribute('data-theme','light'); btnLight.classList.add('active'); btnDark.classList.remove('active'); }
+  }
+  var saved = null;
+  try{ saved = localStorage.getItem('athar-theme'); }catch(e){}
+  if(saved){ apply(saved); }
+
+  btnLight.addEventListener('click', function(){ apply('light'); try{localStorage.setItem('athar-theme','light');}catch(e){} });
+  btnDark.addEventListener('click', function(){ apply('dark'); try{localStorage.setItem('athar-theme','dark');}catch(e){} });
+
+  // completed-task interactive demo
+  var row = document.getElementById('demoTaskRow');
+  var box = document.getElementById('demoCheckbox');
+  var title = document.getElementById('demoTaskTitle');
+  var hint = document.getElementById('demoHint');
+  var ring = document.getElementById('demoRing');
+  var ringLabel = document.getElementById('demoRingLabel');
+  var doneNum = document.getElementById('demoDoneNum');
+  var done = false;
+  if(row){
+    row.style.transition = 'opacity .5s ease, transform .5s ease';
+    row.addEventListener('click', function(){
+      done = !done;
+      if(done){
+        box.classList.add('is-checked');
+        title.classList.add('done');
+        ring.style.setProperty('--pct','80');
+        ringLabel.textContent = '٪80';
+        doneNum.textContent = '4';
+        hint.textContent = 'أُنجزت ✨ — ستختفي من القائمة النشطة بعد لحظة';
+        setTimeout(function(){ row.style.opacity='0'; row.style.transform='translateY(-6px)'; }, 550);
+      } else {
+        box.classList.remove('is-checked');
+        title.classList.remove('done');
+        ring.style.setProperty('--pct','60');
+        ringLabel.textContent = '٪60';
+        doneNum.textContent = '3';
+        hint.textContent = '← انقري على الدائرة لتجربة التأثير';
+        row.style.opacity='1'; row.style.transform='translateY(0)';
+      }
+    });
+  }
+})();
+</script>
