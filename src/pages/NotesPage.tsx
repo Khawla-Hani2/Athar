@@ -26,10 +26,10 @@ export function NotesPage() {
   const handleSubmit = async (input: NewNoteInput) => {
     if (editingNote) {
       await updateNote(user.uid, editingNote.id, input)
-      showToast('تم حفظ الملاحظة ✨')
+      showToast('تم حفظ الملاحظة ')
     } else {
       await createNote(user.uid, input)
-      showToast('تمت إضافة الملاحظة ✨')
+      showToast('تمت إضافة الملاحظة ')
     }
   }
 

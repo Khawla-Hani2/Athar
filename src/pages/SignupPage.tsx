@@ -1,23 +1,22 @@
 import { FormEvent, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Logo } from '@/components/layout/Logo'
 import { Icon } from '@/components/ui/Icon'
 import { Input } from '@/components/ui/Input'
 import { Field } from '@/components/ui/Field'
 import { Button } from '@/components/ui/Button'
-import { login, mapAuthError } from '@/services/authService'
+import { signup, mapAuthError } from '@/services/authService'
 import { isFirebaseConfigured } from '@/firebase/config'
 
-export function LoginPage() {
+export function SignupPage() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const from = (location.state as { from?: string } | null)?.from ?? '/'
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -26,11 +25,20 @@ export function LoginPage() {
       return
     }
     setError('')
+    if (password.length < 8) {
+      setError('كلمة المرور يجب أن تتكون من ٨ أحرف على الأقل.')
+      return
+    }
+    if (password !== confirm) {
+      setError('كلمتا المرور غير متطابقتين.')
+      return
+    }
     setLoading(true)
     try {
-      await login(email, password)
-      navigate(from, { replace: true })
+      await signup(name, email, password)
+      navigate('/', { replace: true })
     } catch (err: any) {
+      console.error('[athar] فشل إنشاء الحساب:', err)
       setError(mapAuthError(err?.code ?? ''))
     } finally {
       setLoading(false)
@@ -42,9 +50,9 @@ export function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-[360px]">
           <Logo withWordmark={false} size={42} className="mb-4.5" />
-          <h1 className="text-[24px] sm:text-[26px]">تسجيل الدخول إلى أَثَر</h1>
+          <h1 className="text-[24px] sm:text-[26px]">إنشاء حساب في أَثَر</h1>
           <p className="text-[13.5px] text-ink-500 mt-2 leading-relaxed">
-            رتّبي يومك، اصنعي إنجازك، واتركي أثرًا.
+            ابدئي رحلتك: رتّبي يومك، اصنعي إنجازك، واتركي أثرًا.
           </p>
 
           {!isFirebaseConfigured && (
@@ -54,6 +62,17 @@ export function LoginPage() {
           )}
 
           <form className="flex flex-col gap-4 mt-7" onSubmit={handleSubmit}>
+            <Field label="الاسم">
+              <Input
+                type="text"
+                icon={<Icon name="user" />}
+                placeholder="اسمك"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                autoComplete="name"
+              />
+            </Field>
             <Field label="البريد الإلكتروني">
               <Input
                 type="email"
@@ -65,7 +84,7 @@ export function LoginPage() {
                 autoComplete="email"
               />
             </Field>
-            <Field label="كلمة المرور">
+            <Field label="كلمة المرور" hint="٨ أحرف على الأقل">
               <Input
                 type={showPassword ? 'text' : 'password'}
                 icon={<Icon name="lock" />}
@@ -78,25 +97,32 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="current-password"
+                autoComplete="new-password"
+              />
+            </Field>
+            <Field label="تأكيد كلمة المرور">
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                icon={<Icon name="lock" />}
+                placeholder="••••••••"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                autoComplete="new-password"
               />
             </Field>
 
             {error && <p className="text-[12.5px] text-crit-600">{error}</p>}
 
-            <Link to="/forgot-password" className="text-[12.5px] text-teal-600 font-semibold self-start no-underline">
-              نسيت كلمة المرور؟
-            </Link>
-
             <Button type="submit" className="w-full py-3 mt-1.5" disabled={loading}>
-              {loading ? 'جارٍ الدخول…' : 'تسجيل الدخول'}
+              {loading ? 'جارٍ إنشاء الحساب…' : 'إنشاء حساب'}
             </Button>
           </form>
 
           <p className="text-[12.5px] text-ink-500 mt-6 text-center">
-            ليس لديكِ حساب؟{' '}
-            <Link to="/signup" className="text-teal-600 font-semibold no-underline">
-              أنشئي حسابًا
+            لديكِ حساب بالفعل؟{' '}
+            <Link to="/login" className="text-teal-600 font-semibold no-underline">
+              تسجيل الدخول
             </Link>
           </p>
         </div>

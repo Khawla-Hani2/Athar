@@ -32,6 +32,7 @@ export function IconSprite() {
         <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" /></symbol>
         <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="2.6" /></symbol>
         <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /></symbol>
         <symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3s-1 3-4 5.5C5 11 4.5 13.5 5.5 16a6.5 6.5 0 0 0 13 0c.6-3-1-4.5-2-6-0.3 2-1.3 3-2 3 1-3-.5-6-2.5-10Z" /></symbol>
         <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4.5h10v5a5 5 0 0 1-10 0v-5Z" /><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5A3.5 3.5 0 0 1 16.5 11M10 15v2.5M14 15v2.5M8 21h8M9 17.5h6v3.5H9z" /></symbol>
         <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15.5 12 9l6 6.5" /></symbol>

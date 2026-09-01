@@ -5,6 +5,7 @@ import { ToastProvider } from '@/components/ui/Toast'
 import { IconSprite } from '@/components/ui/IconSprite'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
 import { LoginPage } from '@/pages/LoginPage'
+import { SignupPage } from '@/pages/SignupPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
 import { DashboardPage } from '@/pages/DashboardPage'
@@ -20,9 +21,10 @@ export function App() {
       <AuthProvider>
         <ToastProvider>
           <IconSprite />
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
 

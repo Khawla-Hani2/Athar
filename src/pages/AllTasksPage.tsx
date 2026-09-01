@@ -42,7 +42,7 @@ export function AllTasksPage() {
         await reopenTask(user.uid, task.id)
       } else {
         await completeTask(user.uid, task.id)
-        showToast('أحسنتِ! تم إنجاز المهمة ✨')
+        showToast('أحسنتِ! تم إنجاز المهمة ')
       }
     } catch {
       showToast('تعذّر تحديث المهمة، حاولي مرة أخرى.', 'error')
@@ -57,10 +57,10 @@ export function AllTasksPage() {
   const handleSubmitTask = async (input: NewTaskInput) => {
     if (editingTask) {
       await updateTask(user.uid, editingTask.id, input)
-      showToast('تم حفظ التغييرات ✨')
+      showToast('تم حفظ التغييرات ')
     } else {
       await createTask(user.uid, input)
-      showToast('تمت إضافة المهمة ✨')
+      showToast('تمت إضافة المهمة ')
     }
   }
 
@@ -113,7 +113,7 @@ export function AllTasksPage() {
           </div>
         ) : activeTasks.length === 0 ? (
           <EmptyState
-            message={search ? 'لا توجد نتائج مطابقة.' : 'ما عندك مهام اليوم ✨'}
+            message={search ? 'لا توجد نتائج مطابقة.' : 'ما عندك مهام اليوم '}
             icon={<Icon name={search ? 'search' : 'check'} className="w-6 h-6" />}
           />
         ) : (
