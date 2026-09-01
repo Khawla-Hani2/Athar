@@ -15,7 +15,7 @@ export function PriorityTaskCard({ task, onComplete, onOpen }: PriorityTaskCardP
   if (!task) {
     return (
       <div className="relative overflow-hidden rounded-lg p-6 mb-5 bg-gradient-to-l from-teal-900 to-[#123f3b] text-paper-alt text-center">
-        <p className="text-[15px]">ما عندك مهام اليوم ✨</p>
+        <p className="text-[15px]">ما عندك مهام اليوم </p>
       </div>
     )
   }

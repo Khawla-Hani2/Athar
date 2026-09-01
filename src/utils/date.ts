@@ -158,11 +158,11 @@ export function isOverdue(task: { deadlineDate: string | null; deadlineTime: str
 
 export function getGreeting(date: Date = new Date()): string {
   const h = date.getHours()
-  if (h < 5) return 'ليلة سعيدة ✨'
-  if (h < 12) return 'صباح الخير ✨'
-  if (h < 17) return 'نهارك سعيد ✨'
-  if (h < 20) return 'مساء الخير ✨'
-  return 'مساء الخير ✨'
+  if (h < 5) return 'ليلة سعيدة '
+  if (h < 12) return 'صباح الخير '
+  if (h < 17) return 'نهارك سعيد '
+  if (h < 20) return 'مساء الخير '
+  return 'مساء الخير '
 }
 
 export function formatClock(date: Date): string {

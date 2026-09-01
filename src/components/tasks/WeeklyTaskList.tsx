@@ -30,7 +30,7 @@ export function WeeklyTaskList({ tasks, onToggleComplete, onOpen }: WeeklyTaskLi
     .filter((g) => g.dayTasks.length > 0)
 
   if (groups.length === 0) {
-    return <EmptyState message="ما عندك مهام هذا الأسبوع ✨" icon={<Icon name="cal-days" className="w-6 h-6" />} />
+    return <EmptyState message="ما عندك مهام هذا الأسبوع " icon={<Icon name="cal-days" className="w-6 h-6" />} />
   }
 
   return (
