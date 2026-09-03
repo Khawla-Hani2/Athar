@@ -70,7 +70,8 @@ export function TaskFormModal({ open, onClose, onSubmit, onDelete, task }: TaskF
     try {
       await onSubmit({ ...form, title: form.title.trim(), endDate: showEndDate ? form.endDate : null })
       onClose()
-    } catch (e) {
+    } catch (err) {
+      console.error('[athar] فشل حفظ المهمة:', err)
       setError('تعذّر حفظ المهمة، حاولي مرة أخرى.')
     } finally {
       setSubmitting(false)

@@ -14,8 +14,6 @@ export const WEEKDAY_NAMES_AR = [
   'السبت',
 ]
 
-export const WEEKDAY_NAMES_SHORT_AR = ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س']
-
 /** Week grid header order used across the app: Saturday → Friday */
 export const WEEK_HEADER_AR = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج']
 
@@ -57,10 +55,6 @@ export function formatArabicDate(date: Date, withWeekday = true): string {
   const month = MONTH_NAMES_AR[date.getMonth()]
   const year = toArabicDigits(date.getFullYear())
   return withWeekday ? `${weekday}، ${day} ${month} ${year}` : `${day} ${month} ${year}`
-}
-
-export function formatArabicDayMonth(date: Date): string {
-  return `${toArabicDigits(date.getDate())} ${MONTH_NAMES_AR[date.getMonth()]}`
 }
 
 export function formatArabicTime(time: string | null | undefined): string {
@@ -111,18 +105,10 @@ export function endOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999)
 }
 
-export function isSameISODate(a: string, b: string): boolean {
-  return a === b
-}
-
 export function addDays(date: Date, days: number): Date {
   const d = new Date(date)
   d.setDate(d.getDate() + days)
   return d
-}
-
-export function getMonthKey(date: Date): string {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`
 }
 
 /** Countdown like "٣س ٢٠د" or "متأخرة منذ يوم" if in the past */

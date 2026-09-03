@@ -1,26 +1,10 @@
-import { useEffect, useState } from 'react'
-import { useAuth } from './useAuth'
+import { useFirestoreSubscription } from './useFirestoreSubscription'
 import { subscribeToNotes } from '@/services/noteService'
 import { Note } from '@/types/note'
 
+const NO_NOTES: Note[] = []
+
 export function useNotes() {
-  const { user } = useAuth()
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!user) {
-      setNotes([])
-      setLoading(false)
-      return
-    }
-    setLoading(true)
-    const unsubscribe = subscribeToNotes(user.uid, (n) => {
-      setNotes(n)
-      setLoading(false)
-    })
-    return unsubscribe
-  }, [user])
-
+  const { data: notes, loading } = useFirestoreSubscription(subscribeToNotes, NO_NOTES)
   return { notes, loading }
 }

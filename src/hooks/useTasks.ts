@@ -1,26 +1,10 @@
-import { useEffect, useState } from 'react'
-import { useAuth } from './useAuth'
+import { useFirestoreSubscription } from './useFirestoreSubscription'
 import { subscribeToTasks } from '@/services/taskService'
 import { Task } from '@/types/task'
 
+const NO_TASKS: Task[] = []
+
 export function useTasks() {
-  const { user } = useAuth()
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!user) {
-      setTasks([])
-      setLoading(false)
-      return
-    }
-    setLoading(true)
-    const unsubscribe = subscribeToTasks(user.uid, (t) => {
-      setTasks(t)
-      setLoading(false)
-    })
-    return unsubscribe
-  }, [user])
-
+  const { data: tasks, loading } = useFirestoreSubscription(subscribeToTasks, NO_TASKS)
   return { tasks, loading }
 }

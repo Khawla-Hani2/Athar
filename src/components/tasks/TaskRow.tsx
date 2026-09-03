@@ -1,9 +1,9 @@
 import { Task, TASK_TYPE_LABELS, TASK_PRIORITY_LABELS } from '@/types/task'
 import { Checkbox } from '@/components/ui/Checkbox'
-import { Badge } from '@/components/ui/Badge'
+import { Badge, PriorityBadge } from '@/components/ui/Badge'
 import { Icon } from '@/components/ui/Icon'
 import { TYPE_DOT_VAR } from '@/utils/taskVisuals'
-import { formatArabicTime, formatOverdueSince, isOverdue } from '@/utils/date'
+import { combineDateTime, formatArabicTime, formatOverdueSince, isOverdue } from '@/utils/date'
 import { cn } from '@/lib/cn'
 
 interface TaskRowProps {
@@ -37,11 +37,11 @@ export function TaskRow({ task, onToggleComplete, onOpen }: TaskRowProps) {
             {TASK_TYPE_LABELS[task.type]}
           </span>
           {overdue ? (
-            <Badge variant="overdue">{formatOverdueSince(new Date(task.deadlineDate ? `${task.deadlineDate}T${task.deadlineTime ?? '23:59'}` : task.date))}</Badge>
-          ) : (
-            <Badge variant={task.priority === 'high' ? 'high' : task.priority === 'medium' ? 'medium' : 'low'}>
-              {TASK_PRIORITY_LABELS[task.priority]}
+            <Badge variant="overdue">
+              {formatOverdueSince(combineDateTime(task.deadlineDate!, task.deadlineTime))}
             </Badge>
+          ) : (
+            <PriorityBadge priority={task.priority} label={TASK_PRIORITY_LABELS[task.priority]} />
           )}
           {(task.time || task.deadlineTime) && (
             <span className="inline-flex items-center gap-1 text-[12px] text-ink-500">

@@ -20,8 +20,8 @@ export function ForgotPasswordPage() {
     try {
       await requestPasswordReset(email)
       setSent(true)
-    } catch (err: any) {
-      setError(mapAuthError(err?.code ?? ''))
+    } catch (err) {
+      setError(mapAuthError(err))
     } finally {
       setLoading(false)
     }

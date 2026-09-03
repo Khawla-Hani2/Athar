@@ -9,6 +9,7 @@ import {
   orderBy,
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
+import { docsWithId, logSnapshotError } from './firestore'
 import { NewTaskInput, Task } from '@/types/task'
 
 function tasksCol(uid: string) {
@@ -17,10 +18,7 @@ function tasksCol(uid: string) {
 
 export function subscribeToTasks(uid: string, callback: (tasks: Task[]) => void) {
   const q = query(tasksCol(uid), orderBy('createdAt', 'desc'))
-  return onSnapshot(q, (snapshot) => {
-    const tasks = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Task)
-    callback(tasks)
-  })
+  return onSnapshot(q, (snapshot) => callback(docsWithId<Task>(snapshot)), logSnapshotError('المهام'))
 }
 
 export async function createTask(uid: string, input: NewTaskInput) {

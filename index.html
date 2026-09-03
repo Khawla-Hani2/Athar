@@ -12,9 +12,185 @@
       href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Apply the saved theme before first paint so the splash and the app agree.
+      // Mirrors what ThemeProvider does once React mounts (localStorage key: athar-theme).
+      try {
+        var storedTheme = localStorage.getItem('athar-theme');
+        if (storedTheme === 'dark' || storedTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', storedTheme);
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      /* Initial splash screen. Markup lives in <body> so it paints instantly on
+         first load and on refresh; src/lib/splash.ts fades and removes it once
+         the app is ready. Colours are literal design-system tokens so the splash
+         renders correctly before the app stylesheet has loaded. */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 24px;
+        background: #faf5ea;
+        color: #0f4c48;
+        opacity: 1;
+        transition: opacity 0.45s ease, visibility 0.45s ease;
+        /* Failsafe: clear the splash even if the app bundle never runs. */
+        animation: splashFailsafe 0s linear 7s forwards;
+      }
+      html[data-theme='dark'] #splash {
+        background: #0f1517;
+        color: #4fb6ac;
+      }
+      @media (prefers-color-scheme: dark) {
+        html:not([data-theme='light']) #splash {
+          background: #0f1517;
+          color: #4fb6ac;
+        }
+      }
+      #splash.splash--hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      #splash .splash__mark {
+        width: 84px;
+        height: 84px;
+        animation: splashRise 0.5s ease both, splashFloat 2.6s ease-in-out 0.5s infinite;
+      }
+      #splash .splash__wordmark {
+        font-family: 'El Messiri', 'Amiri', 'Traditional Arabic', serif;
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: #241f19;
+        animation: splashRise 0.5s ease 0.06s both;
+      }
+      html[data-theme='dark'] #splash .splash__wordmark {
+        color: #f2eadb;
+      }
+      @media (prefers-color-scheme: dark) {
+        html:not([data-theme='light']) #splash .splash__wordmark {
+          color: #f2eadb;
+        }
+      }
+
+      #splash .splash__dots {
+        display: flex;
+        gap: 7px;
+        animation: splashRise 0.5s ease 0.12s both;
+      }
+      #splash .splash__dots i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.4;
+        animation: splashDot 1s ease-in-out infinite;
+      }
+      #splash .splash__dots i:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      #splash .splash__dots i:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      @media (min-width: 768px) {
+        #splash {
+          gap: 24px;
+        }
+        #splash .splash__mark {
+          width: 96px;
+          height: 96px;
+        }
+        #splash .splash__wordmark {
+          font-size: 23px;
+        }
+      }
+
+      @keyframes splashRise {
+        from {
+          opacity: 0;
+          transform: translateY(7px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes splashFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes splashDot {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: translateY(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-4px);
+        }
+      }
+
+      @keyframes splashFailsafe {
+        to {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #splash .splash__mark,
+        #splash .splash__wordmark,
+        #splash .splash__dots,
+        #splash .splash__dots i {
+          animation: none;
+        }
+        #splash {
+          transition: opacity 0.2s ease;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <div id="splash" role="status" aria-label="جارٍ تحميل التطبيق">
+      <svg
+        class="splash__mark"
+        viewBox="0 0 48 48"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M27 6.5c-2.2 6.6-5.3 15-7.6 21.8-1.9 5.5-4 9.3-9 11.6" stroke-width="3.1" />
+        <path d="M25.5 12c3.6-2.6 7-3.6 10.3-3" stroke-width="2.5" />
+        <path d="M23.7 16.6c4-1 7.7-.7 11.6 1.4" stroke-width="2.5" />
+        <circle cx="8.6" cy="41.4" r="1.35" fill="currentColor" stroke="none" />
+        <circle cx="4.4" cy="43.3" r=".9" fill="currentColor" stroke="none" />
+      </svg>
+      <div class="splash__wordmark">أَثَر</div>
+      <div class="splash__dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

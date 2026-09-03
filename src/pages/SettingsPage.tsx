@@ -13,6 +13,8 @@ import { useToast } from '@/components/ui/Toast'
 import { changePassword, mapAuthError } from '@/services/authService'
 import { saveSettings } from '@/services/settingsService'
 import { Goals, NotificationSettings } from '@/types/settings'
+import { authMessages } from '@/lib/messages'
+import { getPasswordError } from '@/lib/validation'
 import { cn } from '@/lib/cn'
 
 export function SettingsPage() {
@@ -45,17 +47,18 @@ export function SettingsPage() {
   const handleChangePassword = async (e: FormEvent) => {
     e.preventDefault()
     setPasswordError('')
-    if (newPassword.length < 8) {
-      setPasswordError('كلمة المرور يجب أن تتكون من ٨ أحرف على الأقل.')
+    const validationError = getPasswordError(newPassword)
+    if (validationError) {
+      setPasswordError(validationError)
       return
     }
     setSavingPassword(true)
     try {
       await changePassword(newPassword)
       setNewPassword('')
-      showToast('تم تحديث كلمة المرور ')
-    } catch (err: any) {
-      setPasswordError(mapAuthError(err?.code ?? ''))
+      showToast(authMessages.passwordUpdated)
+    } catch (err) {
+      setPasswordError(mapAuthError(err))
     } finally {
       setSavingPassword(false)
     }
