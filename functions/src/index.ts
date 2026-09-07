@@ -3,6 +3,8 @@ import { getFirestore } from 'firebase-admin/firestore'
 import { onSchedule } from 'firebase-functions/v2/scheduler'
 import {
   emailUser,
+  escapeHtml,
+  forEachLimit,
   getAllUserIds,
   getUserSettings,
   userSettingsRef,
@@ -14,6 +16,9 @@ initializeApp()
 const db = getFirestore()
 
 const TIME_ZONE = 'Asia/Riyadh'
+
+/** How many users a scheduled job processes at once (keeps wall-clock bounded). */
+const USER_CONCURRENCY = 8
 
 interface ClockParts {
   dateISO: string
@@ -65,14 +70,14 @@ export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
   const { dateISO, hh, mm } = nowParts()
   const userIds = await getAllUserIds()
 
-  for (const uid of userIds) {
+  await forEachLimit(userIds, USER_CONCURRENCY, async (uid) => {
     const settings = await getUserSettings(uid)
-    if (!settings?.notifications?.dailyEmailEnabled) continue
-    if (settings.lastDailyEmailSentDate === dateISO) continue
-    if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) continue
+    if (!settings?.notifications?.dailyEmailEnabled) return
+    if (settings.lastDailyEmailSentDate === dateISO) return
+    if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) return
 
     const tasks = await fetchTodayTasks(uid, dateISO)
-    if (tasks.length === 0) continue
+    if (tasks.length === 0) return
 
     const highPriorityDueToday = tasks.filter(
       (t) => t.priority === 'high' && (t.deadlineDate === dateISO || t.date === dateISO)
@@ -82,11 +87,11 @@ export const sendDailySummaries = onSchedule('every 5 minutes', async () => {
     if (highPriorityDueToday.length > 0) {
       body += `<p>منها <b>${highPriorityDueToday.length}</b> ${highPriorityDueToday.length === 1 ? 'مهمة عالية الأولوية وموعدها النهائي اليوم' : 'مهام عالية الأولوية وموعدها النهائي اليوم'}.</p>`
     }
-    body += '<ul>' + tasks.slice(0, 10).map((t) => `<li>${t.title} — ${TASK_PRIORITY_LABELS_AR[t.priority]}</li>`).join('') + '</ul>'
+    body += '<ul>' + tasks.slice(0, 10).map((t) => `<li>${escapeHtml(t.title)} — ${TASK_PRIORITY_LABELS_AR[t.priority]}</li>`).join('') + '</ul>'
 
     await emailUser(uid, 'أَثَر — ملخصك اليومي', body)
     await userSettingsRef(uid).set({ lastDailyEmailSentDate: dateISO }, { merge: true })
-  }
+  })
 })
 
 // ─────────────────────────────────────────────────────────────
@@ -102,9 +107,9 @@ export const sendDeadlineReminders = onSchedule('every 15 minutes', async () => 
   const now = Date.now()
   const userIds = await getAllUserIds()
 
-  for (const uid of userIds) {
+  await forEachLimit(userIds, USER_CONCURRENCY, async (uid) => {
     const settings = await getUserSettings(uid)
-    if (!settings?.notifications?.deadlineNotificationsEnabled) continue
+    if (!settings?.notifications?.deadlineNotificationsEnabled) return
 
     const tasksSnap = await userTasksRef(uid).where('status', '==', 'pending').get()
 
@@ -116,15 +121,16 @@ export const sendDeadlineReminders = onSchedule('every 15 minutes', async () => 
       const notifyAt = deadline - REMINDER_OFFSET_MS[task.reminder]
 
       if (now >= notifyAt && now < deadline) {
+        const safeTitle = escapeHtml(task.title)
         await emailUser(
           uid,
           `أَثَر — تذكير: ${task.title}`,
-          `<p>يقترب الموعد النهائي لمهمة <b>${task.title}</b>.</p><p>الأولوية: ${TASK_PRIORITY_LABELS_AR[task.priority]}</p>`
+          `<p>يقترب الموعد النهائي لمهمة <b>${safeTitle}</b>.</p><p>الأولوية: ${TASK_PRIORITY_LABELS_AR[task.priority]}</p>`
         )
         await doc.ref.set({ reminderSentAt: now }, { merge: true })
       }
     }
-  }
+  })
 })
 
 // ─────────────────────────────────────────────────────────────
@@ -135,11 +141,11 @@ export const sendWeeklySummaries = onSchedule('every 15 minutes', async () => {
   if (weekday !== 'Fri') return
 
   const userIds = await getAllUserIds()
-  for (const uid of userIds) {
+  await forEachLimit(userIds, USER_CONCURRENCY, async (uid) => {
     const settings = await getUserSettings(uid)
-    if (!settings?.notifications?.weeklySummaryEnabled) continue
-    if (settings.lastWeeklySummarySentDate === dateISO) continue
-    if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) continue
+    if (!settings?.notifications?.weeklySummaryEnabled) return
+    if (settings.lastWeeklySummarySentDate === dateISO) return
+    if (!timeWithinWindow(settings.notifications.dailyEmailTime ?? '08:00', { hh, mm })) return
 
     const tasksSnap = await userTasksRef(uid).get()
     const tasks = tasksSnap.docs.map((d) => d.data() as TaskDoc)
@@ -156,7 +162,7 @@ export const sendWeeklySummaries = onSchedule('every 15 minutes', async () => {
       `<p>هذا أسبوعك في أَثَر </p><p>أنجزتِ <b>${completed}</b> من أصل <b>${total}</b> مهمة — نسبة إنجاز <b>${percentage}٪</b>.</p>`
     )
     await userSettingsRef(uid).set({ lastWeeklySummarySentDate: dateISO }, { merge: true })
-  }
+  })
 })
 
 // ─────────────────────────────────────────────────────────────
@@ -173,7 +179,7 @@ export const runMonthlyCleanup = onSchedule({ schedule: '0 3 1 * *', timeZone: T
   const monthEndISO = `${monthEndDate.getFullYear()}-${String(monthEndDate.getMonth() + 1).padStart(2, '0')}-${String(monthEndDate.getDate()).padStart(2, '0')}`
 
   const userIds = await getAllUserIds()
-  for (const uid of userIds) {
+  await forEachLimit(userIds, Math.ceil(USER_CONCURRENCY / 2), async (uid) => {
     const tasksCol = userTasksRef(uid)
     const snap = await tasksCol.get()
     const monthTasks = snap.docs.filter((d) => {
@@ -201,5 +207,5 @@ export const runMonthlyCleanup = onSchedule({ schedule: '0 3 1 * *', timeZone: T
       toDelete.slice(i, i + batchSize).forEach((d) => batch.delete(d.ref))
       await batch.commit()
     }
-  }
+  })
 })

@@ -2,11 +2,61 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
     }
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // Guards every client write: a bounded field count plus length caps on the
+    // free-text fields, so no user can bloat their own subtree to run up the
+    // project's storage/read bill or choke the scheduled functions.
+    function withinLimits() {
+      let d = request.resource.data;
+      return d.size() <= 32
+        && (!('title' in d)   || (d.title is string   && d.title.size()   <= 2000))
+        && (!('notes' in d)   || (d.notes is string   && d.notes.size()   <= 20000))
+        && (!('content' in d) || (d.content is string && d.content.size() <= 100000))
+        && (!('links' in d)   || (d.links is list     && d.links.size()    <= 50))
+        && (!('subtasks' in d)|| (d.subtasks is list  && d.subtasks.size() <= 100));
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && withinLimits();
+      allow delete: if isOwner(userId);
+
+      match /tasks/{taskId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && withinLimits()
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.status in ['pending', 'completed']
+          && request.resource.data.priority in ['high', 'medium', 'low']
+          && request.resource.data.links is list
+          && request.resource.data.subtasks is list;
+      }
+
+      match /notes/{noteId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && withinLimits()
+          && request.resource.data.title is string
+          && request.resource.data.content is string;
+      }
+
+      match /meta/{docId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && withinLimits();
+      }
+
+      // Archived monthly stats: written only by the Cloud Functions (the Admin
+      // SDK bypasses these rules); the client only ever reads them.
+      match /monthlyHistory/{monthId} {
+        allow read: if isOwner(userId);
+        allow write: if false;
+      }
+
+      // No recursive wildcard and no catch-all: any collection not matched above
+      // is denied outright. Add a `match` block here when the app adds one.
     }
   }
 }
