@@ -9,11 +9,14 @@ import { Icon } from '@/components/ui/Icon'
 import { useAuth } from '@/hooks/useAuth'
 import { useSettings } from '@/hooks/useSettings'
 import { useTheme } from '@/hooks/useTheme'
+import { useGoogleCalendar } from '@/hooks/useGoogleCalendar'
 import { useToast } from '@/components/ui/Toast'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { changePassword, mapAuthError } from '@/services/authService'
 import { saveSettings } from '@/services/settingsService'
+import { isFirebaseConfigured } from '@/firebase/config'
 import { Goals, NotificationSettings } from '@/types/settings'
-import { authMessages } from '@/lib/messages'
+import { authMessages, confirmMessages, googleCalendarMessages } from '@/lib/messages'
 import { getPasswordError } from '@/lib/validation'
 import { cn } from '@/lib/cn'
 
@@ -22,12 +25,14 @@ export function SettingsPage() {
   const { settings } = useSettings()
   const { theme, setTheme } = useTheme()
   const { showToast } = useToast()
+  const googleCalendar = useGoogleCalendar()
 
   const [goals, setGoals] = useState<Goals>(settings.goals)
   const [notifications, setNotifications] = useState<NotificationSettings>(settings.notifications)
   const [newPassword, setNewPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
+  const [confirmingGoogleDisconnect, setConfirmingGoogleDisconnect] = useState(false)
 
   useEffect(() => setGoals(settings.goals), [settings.goals])
   useEffect(() => setNotifications(settings.notifications), [settings.notifications])
@@ -64,6 +69,21 @@ export function SettingsPage() {
     }
   }
 
+  const handleConnectGoogle = async () => {
+    try {
+      await googleCalendar.connect()
+      showToast(googleCalendarMessages.connected)
+    } catch {
+      // googleCalendar.error already holds a mapped Arabic message shown below.
+    }
+  }
+
+  const handleDisconnectGoogle = async () => {
+    await googleCalendar.disconnect()
+    setConfirmingGoogleDisconnect(false)
+    showToast(googleCalendarMessages.disconnected)
+  }
+
   return (
     <div className="flex flex-col gap-5 max-w-[720px]">
       <Topbar title="الإعدادات" />
@@ -88,6 +108,34 @@ export function SettingsPage() {
           </Button>
         </form>
       </Card>
+
+      {isFirebaseConfigured && (
+        <Card>
+          <h2 className="text-[16px] mb-4">ربط Google Calendar</h2>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[13.5px] font-semibold">
+                {googleCalendar.status === 'connected' ? 'متصل بتقويم Google' : 'غير متصل'}
+              </p>
+              <p className="text-[12px] text-ink-500 mt-0.5">
+                {googleCalendar.status === 'connected'
+                  ? 'يمكنك عرض وإدارة أحداث Google Calendar من صفحة التقويم.'
+                  : googleCalendarMessages.notConnectedBody}
+              </p>
+              {googleCalendar.error && <p className="text-[12px] text-crit-600 mt-1">{googleCalendar.error}</p>}
+            </div>
+            {googleCalendar.status === 'connected' ? (
+              <Button variant="secondary" size="sm" onClick={() => setConfirmingGoogleDisconnect(true)}>
+                قطع الربط
+              </Button>
+            ) : (
+              <Button size="sm" onClick={handleConnectGoogle} disabled={googleCalendar.status === 'connecting'}>
+                {googleCalendar.status === 'connecting' ? 'جارٍ الربط…' : 'ربط الحساب'}
+              </Button>
+            )}
+          </div>
+        </Card>
+      )}
 
       <Card>
         <h2 className="text-[16px] mb-4">الأهداف</h2>
@@ -194,6 +242,15 @@ export function SettingsPage() {
           </button>
         </div>
       </Card>
+
+      <ConfirmDialog
+        open={confirmingGoogleDisconnect}
+        title={confirmMessages.disconnectGoogleTitle}
+        description={confirmMessages.disconnectGoogleBody}
+        confirmLabel="قطع الربط"
+        onConfirm={handleDisconnectGoogle}
+        onCancel={() => setConfirmingGoogleDisconnect(false)}
+      />
     </div>
   )
 }
