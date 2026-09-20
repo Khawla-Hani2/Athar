@@ -5,6 +5,7 @@ import { Icon } from '@/components/ui/Icon'
 import { MonthGrid } from '@/components/calendar/MonthGrid'
 import { WeekView } from '@/components/calendar/WeekView'
 import { DayPanel } from '@/components/calendar/DayPanel'
+import { GoogleCalendarPanel } from '@/components/calendar/GoogleCalendarPanel'
 import { TaskEditor } from '@/components/tasks/TaskEditor'
 import { useAuth } from '@/hooks/useAuth'
 import { useTasks } from '@/hooks/useTasks'
@@ -12,7 +13,7 @@ import { useRecordDialog } from '@/hooks/useRecordDialog'
 import { useTaskActions } from '@/hooks/useTaskActions'
 import { Task } from '@/types/task'
 import { tasksOnDate } from '@/utils/taskSort'
-import { addDays, MONTH_NAMES_AR, todayISO, toArabicDigits } from '@/utils/date'
+import { addDays, endOfMonth, MONTH_NAMES_AR, startOfMonth, toISODate, todayISO, toArabicDigits } from '@/utils/date'
 import { cn } from '@/lib/cn'
 
 type ViewMode = 'month' | 'week'
@@ -28,6 +29,8 @@ export function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(todayISO())
 
   const dayTasks = useMemo(() => tasksOnDate(tasks, selectedDate), [tasks, selectedDate])
+  const monthRangeStart = useMemo(() => toISODate(startOfMonth(anchorDate)), [anchorDate])
+  const monthRangeEnd = useMemo(() => toISODate(endOfMonth(anchorDate)), [anchorDate])
 
   if (!user) return null
 
@@ -83,12 +86,19 @@ export function CalendarPage() {
         ) : (
           <WeekView weekAnchor={anchorDate} tasks={tasks} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
         )}
-        <DayPanel
-          dateISO={selectedDate}
-          tasks={dayTasks}
-          onToggleComplete={actions.toggleComplete}
-          onOpen={dialog.openEdit}
-        />
+        <div className="flex flex-col gap-4">
+          <DayPanel
+            dateISO={selectedDate}
+            tasks={dayTasks}
+            onToggleComplete={actions.toggleComplete}
+            onOpen={dialog.openEdit}
+          />
+          <GoogleCalendarPanel
+            selectedDate={selectedDate}
+            rangeStartISO={monthRangeStart}
+            rangeEndISO={monthRangeEnd}
+          />
+        </div>
       </div>
 
       <TaskEditor dialog={dialog} actions={actions} createDefaults={{ date: selectedDate }} />

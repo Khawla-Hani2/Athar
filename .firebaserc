@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "demo-athar"
+    "default": "athar-3b063",
+    "demo": "demo-athar"
   }
 }

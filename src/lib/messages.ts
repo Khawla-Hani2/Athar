@@ -23,6 +23,21 @@ export const confirmMessages = {
   deleteTaskBody: (title: string) => `"${title}" — لا يمكن التراجع عن هذا الإجراء.`,
   deleteNoteTitle: 'هل أنتِ متأكدة من حذف هذه الملاحظة؟',
   deleteNoteBody: 'لا يمكن التراجع عن هذا الإجراء.',
+  deleteEventTitle: 'هل أنتِ متأكدة من حذف هذا الحدث من Google Calendar؟',
+  deleteEventBody: (title: string) => `"${title}" — لا يمكن التراجع عن هذا الإجراء.`,
+  disconnectGoogleTitle: 'هل تريدين قطع الربط مع Google Calendar؟',
+  disconnectGoogleBody: 'لن تظهر أحداث تقويم Google بعد الآن حتى تُعيدي الربط.',
+} as const
+
+export const googleCalendarMessages = {
+  connected: 'تم ربط تقويم Google بنجاح ',
+  disconnected: 'تم قطع الربط مع Google Calendar',
+  eventCreated: 'تمت إضافة الحدث إلى Google Calendar ',
+  eventUpdated: 'تم حفظ التغييرات على الحدث ',
+  eventDeleted: 'تم حذف الحدث من Google Calendar',
+  needsReconnect: 'انتهت صلاحية الاتصال بـ Google Calendar، أعيدي الربط لمتابعة الاستخدام.',
+  notConnectedTitle: 'اربطي تقويم Google',
+  notConnectedBody: 'اعرضي أحداث Google Calendar وأنشئي أحداثًا جديدة مباشرة من أَثَر.',
 } as const
 
 export const authMessages = {
